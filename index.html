@@ -7,198 +7,387 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ===== MANTENEMOS LOS MISMOS ESTILOS ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #f8fafd;
+            --bg-sidebar: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #6366f1;
+            --accent-light: #e0e7ff;
+            --accent-soft: #c7d2fe;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Colores pastel para gráficos */
+            --pastel-1: #f9a8d4;  /* Rosa pastel */
+            --pastel-2: #c4b5fd;  /* Lila pastel */
+            --pastel-3: #a5f3fc;  /* Celeste pastel */
+            --pastel-4: #bef264;  /* Verde pastel */
+            --pastel-5: #fed7aa;  /* Naranja pastel */
+            --pastel-6: #fecaca;  /* Rojo pastel */
+            --pastel-7: #cbd5e1;  /* Gris pastel */
+            --pastel-8: #fbcfe8;  /* Rosa más claro */
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
         }
 
         body {
-            background: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
         }
 
         /* Sidebar */
         .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            box-shadow: var(--shadow-lg);
             position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
             height: 100vh;
-            background: linear-gradient(180deg, #1a1c2e 0%, #2d3a5e 100%);
-            color: white;
-            padding: 20px;
             overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            z-index: 50;
+            transition: all 0.3s ease;
         }
 
         .sidebar-header {
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+            padding: 30px 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .sidebar-header i {
-            font-size: 40px;
-            color: #4f9eff;
-            margin-bottom: 10px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .nav-item {
-            padding: 12px 15px;
-            margin: 5px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .logo-wrapper {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .nav-item:hover, .nav-item.active {
-            background: rgba(79, 158, 255, 0.2);
-            color: #4f9eff;
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .logo-text h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            padding: 24px 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .nav-item i {
             width: 20px;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
         }
 
         /* Main Content */
         .main-content {
-            margin-left: 260px;
-            padding: 20px;
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
         }
 
         /* Top Bar */
         .top-bar {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
 
         .page-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .date-time {
-            color: #64748b;
+        .date-badge {
+            background: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
             font-size: 14px;
+            font-weight: 500;
+        }
+
+        .date-badge i {
+            color: var(--accent);
         }
 
         .last-update {
-            background: #e2e8f0;
-            padding: 5px 12px;
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
-            color: #475569;
+            font-weight: 600;
+            margin-left: 15px;
         }
 
-        /* Stats Cards */
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-primary);
+            padding: 4px 12px 4px 4px;
+            border-radius: var(--radius-lg);
+        }
+
+        .filter-label {
+            background: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-select {
+            border: none;
+            background: transparent;
+            padding: 8px;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .refresh-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .refresh-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 24px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--pastel-1));
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
 
         .stat-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
 
         .stat-title {
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 14px;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-icon {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
+            background: var(--accent-light);
+            color: var(--accent);
         }
 
-        .stat-icon.blue { background: #e0f2fe; color: #0284c7; }
-        .stat-icon.green { background: #dcfce7; color: #16a34a; }
-        .stat-icon.yellow { background: #fef9c3; color: #ca8a04; }
-        .stat-icon.red { background: #fee2e2; color: #dc2626; }
-        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
-
         .stat-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 5px;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 8px;
         }
 
         .stat-subtitle {
-            color: #94a3b8;
+            color: var(--text-secondary);
             font-size: 13px;
+            margin-bottom: 16px;
         }
 
         .stat-footer {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            border-top: 1px solid #eef2f6;
             display: flex;
             justify-content: space-between;
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 13px;
+            font-weight: 500;
         }
 
-        /* Charts Row */
-        .charts-row {
+        .stat-footer span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 24px;
+            margin-bottom: 30px;
         }
 
         .chart-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
         }
 
         .chart-header {
@@ -211,63 +400,41 @@
         .chart-title {
             font-size: 16px;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-title i {
+            color: var(--accent);
         }
 
         .chart-legend {
             display: flex;
-            gap: 15px;
-            font-size: 13px;
+            gap: 16px;
+            font-size: 12px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px;
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
         }
 
-        /* Loading Spinner */
-        .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        /* Tables */
+        /* Table Styles */
         .table-container {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
         }
 
         .table-header {
@@ -280,7 +447,10 @@
         .table-title {
             font-size: 16px;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .table-actions {
@@ -289,34 +459,37 @@
         }
 
         .btn {
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
             font-size: 13px;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
         }
 
         .btn-outline {
             background: white;
             border: 1px solid #e2e8f0;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         .btn-outline:hover {
-            background: #f8fafc;
+            background: var(--bg-primary);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
         }
 
         table {
@@ -326,137 +499,118 @@
 
         th {
             text-align: left;
-            padding: 12px;
+            padding: 16px 12px;
             background: #f8fafc;
-            color: #475569;
+            color: var(--text-secondary);
             font-weight: 600;
-            font-size: 13px;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            color: #1e293b;
+            padding: 16px 12px;
+            border-bottom: 1px solid #eef2f6;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
-        tr:hover {
+        tr:hover td {
             background: #f8fafc;
         }
 
         .status-badge {
-            padding: 4px 8px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             display: inline-block;
         }
 
         .status-activo {
-            background: #dcfce7;
-            color: #16a34a;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .status-inactivo {
             background: #f1f5f9;
-            color: #64748b;
+            color: #475569;
         }
 
         .status-cortado {
             background: #fee2e2;
-            color: #dc2626;
+            color: #991b1b;
         }
 
         .status-exhonerado {
             background: #fef3c7;
-            color: #b45309;
+            color: #92400e;
         }
 
-        /* Filtros */
-        .filters-bar {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
+            z-index: 1000;
         }
 
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--accent-light);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .filter-label {
-            font-size: 13px;
-            color: #64748b;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #1e293b;
-            min-width: 150px;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 200px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 8px 12px 8px 35px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        /* Paginación */
+        /* Pagination */
         .pagination {
-            margin-top: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 20px;
         }
 
         .pagination-info {
-            color: #64748b;
-            font-size: 13px;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
         .pagination-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
         .pagination-btn {
-            padding: 8px 15px;
+            padding: 8px 16px;
             border: 1px solid #e2e8f0;
             background: white;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
 
         .pagination-btn:disabled {
@@ -466,24 +620,30 @@
 
         .pagination-current {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
         }
 
+        /* Responsive */
         @media (max-width: 1024px) {
             .sidebar {
-                width: 70px;
+                width: 80px;
             }
             
-            .sidebar-header h2, .sidebar-header p, .nav-item span {
+            .sidebar .logo-text,
+            .sidebar .nav-item span {
                 display: none;
             }
             
             .main-content {
-                margin-left: 70px;
+                margin-left: 80px;
             }
             
             .nav-item {
                 justify-content: center;
+                padding: 12px;
             }
             
             .nav-item i {
@@ -492,7 +652,7 @@
         }
 
         @media (max-width: 768px) {
-            .charts-row {
+            .charts-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -500,317 +660,371 @@
                 grid-template-columns: 1fr;
             }
             
-            .filters-bar {
+            .filters-section {
                 flex-direction: column;
-                align-items: stretch;
             }
             
             .filter-group {
-                flex-direction: column;
-                align-items: stretch;
+                width: 100%;
+            }
+            
+            .search-box {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-chart-line"></i>
-            <h2>ISP Admin</h2>
-            <p>Robertsystems</p>
-        </div>
-        
-        <div class="nav-item active" onclick="switchTab('dashboard')">
-            <i class="fas fa-home"></i>
-            <span>Dashboard</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('abonados')">
-            <i class="fas fa-users"></i>
-            <span>Abonados</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('pagos')">
-            <i class="fas fa-credit-card"></i>
-            <span>Pagos</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('deudas')">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span>Deudas</span>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div>
-                <span class="page-title" id="pageTitle">Dashboard</span>
-                <span class="last-update" id="lastUpdate">Última actualización: --:--</span>
-            </div>
-            <div class="date-time" id="currentDateTime"></div>
-        </div>
-
-        <!-- Filtros Rápidos -->
-        <div class="filters-bar">
-            <div class="filter-group">
-                <span class="filter-label">Zona:</span>
-                <select class="filter-select" id="zonaFilter" onchange="applyFilters()">
-                    <option value="all">Todas las zonas</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Plan:</span>
-                <select class="filter-select" id="planFilter" onchange="applyFilters()">
-                    <option value="all">Todos los planes</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <span class="filter-label">Estado:</span>
-                <select class="filter-select" id="estadoFilter" onchange="applyFilters()">
-                    <option value="all">Todos los estados</option>
-                    <option value="activo">Activos</option>
-                    <option value="inactivo">Inactivos</option>
-                    <option value="cortado">Cortados</option>
-                    <option value="exhonerado">Exhonerados</option>
-                </select>
-            </div>
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Buscar abonado..." id="searchInput" onkeyup="applyFilters()">
-            </div>
-            <button class="btn btn-primary" onclick="refreshData()">
-                <i class="fas fa-sync-alt"></i> Actualizar
-            </button>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="dashboard-tab">
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Total Abonados</span>
-                        <div class="stat-icon blue">
-                            <i class="fas fa-users"></i>
-                        </div>
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <div class="logo-icon">
+                        <i class="fas fa-wifi"></i>
                     </div>
-                    <div class="stat-value" id="totalAbonados">-</div>
-                    <div class="stat-subtitle">Activos vs Inactivos</div>
-                    <div class="stat-footer">
-                        <span>Activos: <span id="activosCount">-</span></span>
-                        <span>Inactivos: <span id="inactivosCount">-</span></span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Usuarios Especiales</span>
-                        <div class="stat-icon yellow">
-                            <i class="fas fa-user-slash"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="exhoneradosCount">-</div>
-                    <div class="stat-subtitle">Usuarios exhonerados</div>
-                    <div class="stat-footer">
-                        <span>Cortados: <span id="cortadosCount">-</span></span>
-                        <span>% total: <span id="porcentajeEspeciales">-</span></span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Cobranza</span>
-                        <div class="stat-icon green">
-                            <i class="fas fa-percent"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="porcentajeCobranza">-</div>
-                    <div class="stat-subtitle">Del total facturado</div>
-                    <div class="stat-footer">
-                        <span>Recaudado: <span id="recaudadoMes">-</span></span>
-                        <span>Pendiente: <span id="pendienteMes">-</span></span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Recaudado Bs.</span>
-                        <div class="stat-icon purple">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="totalBs">-</div>
-                    <div class="stat-subtitle">Este mes</div>
-                    <div class="stat-footer">
-                        <span>Tasa: <span id="tasaCambio">36.50</span></span>
-                        <span>USD: <span id="totalUsd">-</span></span>
+                    <div class="logo-text">
+                        <h2>ISP Control</h2>
+                        <p>Robertsystems</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Row -->
-            <div class="charts-row">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <span class="chart-title">Cobranza por Zona</span>
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #2563eb;"></div>
-                                <span>Recaudado</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #94a3b8;"></div>
-                                <span>Pendiente</span>
-                            </div>
-                        </div>
-                    </div>
-                    <canvas id="cobranzaChart" style="height: 300px; width: 100%;"></canvas>
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('dashboard')">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('abonados')">
+                    <i class="fas fa-users"></i>
+                    <span>Abonados</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('pagos')">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Pagos</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('deudas')">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Deudas</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('reportes')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reportes</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('config')">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div>
+                    <span class="page-title" id="pageTitle">Dashboard</span>
+                    <span class="last-update" id="lastUpdate">Actualizando...</span>
+                </div>
+                <div class="date-badge">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <span class="filter-label">Zona</span>
+                    <select class="filter-select" id="zonaFilter" onchange="applyFilters()">
+                        <option value="all">Todas las zonas</option>
+                    </select>
                 </div>
                 
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <span class="chart-title">Distribución de Abonados</span>
+                <div class="filter-group">
+                    <span class="filter-label">Plan</span>
+                    <select class="filter-select" id="planFilter" onchange="applyFilters()">
+                        <option value="all">Todos los planes</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">Estado</span>
+                    <select class="filter-select" id="estadoFilter" onchange="applyFilters()">
+                        <option value="all">Todos</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
+                        <option value="cortado">Cortados</option>
+                        <option value="exhonerado">Exhonerados</option>
+                    </select>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar por nombre o PPPoE..." id="searchInput" onkeyup="applyFilters()">
+                </div>
+
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    Actualizar
+                </button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Abonados</span>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalAbonados">0</div>
+                        <div class="stat-subtitle">Usuarios registrados</div>
+                        <div class="stat-footer">
+                            <span>Activos: <span id="activosCount">0</span></span>
+                            <span>Inactivos: <span id="inactivosCount">0</span></span>
+                        </div>
                     </div>
-                    <canvas id="distribucionChart" style="height: 300px; width: 100%;"></canvas>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Estado de Cuentas</span>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-tag"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="exhoneradosCount">0</div>
+                        <div class="stat-subtitle">Usuarios exhonerados</div>
+                        <div class="stat-footer">
+                            <span>Cortados: <span id="cortadosCount">0</span></span>
+                            <span>% especial: <span id="porcentajeEspeciales">0%</span></span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Cobranza</span>
+                            <div class="stat-icon">
+                                <i class="fas fa-percent"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="porcentajeCobranza">0%</div>
+                        <div class="stat-subtitle">Eficiencia de cobro</div>
+                        <div class="stat-footer">
+                            <span>Recaudado: <span id="recaudadoMes">Bs. 0</span></span>
+                            <span>Pendiente: <span id="pendienteMes">Bs. 0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Recaudación</span>
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalBs">Bs. 0</div>
+                        <div class="stat-subtitle">Este mes</div>
+                        <div class="stat-footer">
+                            <span>Tasa: $1 = <span id="tasaCambio">36.50</span></span>
+                            <span>USD: $<span id="totalUsd">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <!-- Gráfico de Cobranza por Zona (Barras) -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Cobranza por Zona
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: var(--pastel-2);"></div>
+                                    <span>Recaudado</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: var(--pastel-7);"></div>
+                                    <span>Pendiente</span>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="cobranzaChart" style="height: 300px; width: 100%;"></canvas>
+                    </div>
+
+                    <!-- Gráfico de Distribución (Pastel) -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Distribución de Abonados
+                            </div>
+                        </div>
+                        <canvas id="distribucionChart" style="height: 300px; width: 100%;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Deudores Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                            Top 10 Deudores
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" onclick="exportDeudores()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="deudoresTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Abonado</th>
+                                    <th>PPPoE</th>
+                                    <th>Zona</th>
+                                    <th>Plan</th>
+                                    <th>Meses Deuda</th>
+                                    <th>Deuda USD</th>
+                                    <th>Deuda Bs.</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deudoresBody">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
+                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando datos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Top Deudores -->
-            <div class="table-container">
-                <div class="table-header">
-                    <span class="table-title">Top 10 Deudores</span>
-                    <div class="table-actions">
-                        <button class="btn btn-outline" onclick="exportDeudores()">
-                            <i class="fas fa-download"></i> Exportar
-                        </button>
+            <!-- Abonados Tab -->
+            <div id="abonados-tab" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fas fa-users"></i>
+                            Listado de Abonados
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" onclick="exportAbonados()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>PPPoE</th>
+                                    <th>Zona</th>
+                                    <th>Plan</th>
+                                    <th>Estado</th>
+                                    <th>Deuda USD</th>
+                                    <th>Meses</th>
+                                    <th>Teléfono</th>
+                                </tr>
+                            </thead>
+                            <tbody id="abonadosBody">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
+                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando datos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <div class="pagination-info" id="paginationInfo"></div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" onclick="prevPage()" id="prevPageBtn">
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </button>
+                            <span class="pagination-current" id="currentPage">1</span>
+                            <button class="pagination-btn" onclick="nextPage()" id="nextPageBtn">
+                                Siguiente <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table id="deudoresTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Abonado</th>
-                                <th>PPPoE</th>
-                                <th>Zona</th>
-                                <th>Plan</th>
-                                <th>Meses Deuda</th>
-                                <th>Deuda USD</th>
-                                <th>Deuda Bs.</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="deudoresBody">
-                            <tr>
-                                <td colspan="9" style="text-align: center; padding: 30px;">
-                                    Cargando datos...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
 
-        <!-- Abonados Tab -->
-        <div id="abonados-tab" style="display: none;">
-            <div class="table-container">
-                <div class="table-header">
-                    <span class="table-title">Listado de Abonados</span>
-                    <div class="table-actions">
-                        <button class="btn btn-outline" onclick="exportAbonados()">
-                            <i class="fas fa-download"></i> Exportar
-                        </button>
+            <!-- Pagos Tab -->
+            <div id="pagos-tab" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fas fa-credit-card"></i>
+                            Últimos Pagos Registrados
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-outline" onclick="exportPagos()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>PPPoE</th>
-                                <th>Zona</th>
-                                <th>Plan</th>
-                                <th>Estado</th>
-                                <th>Deuda USD</th>
-                                <th>Meses</th>
-                                <th>Teléfono</th>
-                            </tr>
-                        </thead>
-                        <tbody id="abonadosBody">
-                            <tr>
-                                <td colspan="9" style="text-align: center; padding: 30px;">
-                                    Cargando datos...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="pagination">
-                    <div class="pagination-info" id="paginationInfo"></div>
-                    <div class="pagination-controls">
-                        <button class="pagination-btn" onclick="prevPage()" id="prevPageBtn">
-                            <i class="fas fa-chevron-left"></i> Anterior
-                        </button>
-                        <span class="pagination-current" id="currentPage">1</span>
-                        <button class="pagination-btn" onclick="nextPage()" id="nextPageBtn">
-                            Siguiente <i class="fas fa-chevron-right"></i>
-                        </button>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Abonado</th>
+                                    <th>PPPoE</th>
+                                    <th>Monto Bs.</th>
+                                    <th>Monto USD</th>
+                                    <th>Mes Pagado</th>
+                                    <th>Referencia</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pagosBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
+                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando pagos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Pagos Tab -->
-        <div id="pagos-tab" style="display: none;">
-            <div class="table-container">
-                <div class="table-header">
-                    <span class="table-title">Últimos Pagos</span>
-                    <div class="table-actions">
-                        <button class="btn btn-outline" onclick="exportPagos()">
-                            <i class="fas fa-download"></i> Exportar
-                        </button>
-                    </div>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Abonado</th>
-                                <th>PPPoE</th>
-                                <th>Monto Bs.</th>
-                                <th>Monto USD</th>
-                                <th>Mes Pagado</th>
-                                <th>Referencia</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pagosBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 30px;">
-                                    Cargando pagos...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
         // ============================================
-        // CONFIGURACIÓN - USA TU API REAL
+        // CONFIGURACIÓN
         // ============================================
         const CONFIG = {
-            apiUrl: 'https://holy-credit-b4ed.thecrow859.workers.dev/api', // Tu API real
-            pageSize: 20
+            apiUrl: 'https://holy-credit-b4ed.thecrow859.workers.dev/api',
+            pageSize: 20,
+            colors: {
+                pastel: [
+                    '#f9a8d4', '#c4b5fd', '#a5f3fc', '#bef264', 
+                    '#fed7aa', '#fecaca', '#cbd5e1', '#fbcfe8'
+                ]
+            }
         };
 
         // Variables globales
@@ -838,7 +1052,6 @@
             const now = new Date();
             document.getElementById('currentDateTime').textContent = 
                 now.toLocaleDateString('es-VE', { 
-                    weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric',
@@ -854,10 +1067,8 @@
         }
 
         // ============================================
-        // FUNCIONES DE CARGA DE DATOS DESDE API REAL
+        // FUNCIONES DE CARGA DE DATOS
         // ============================================
-
-        // Cargar estadísticas generales
         async function loadEstadisticas() {
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
@@ -866,7 +1077,6 @@
                 if (data.success) {
                     tasaCambioActual = data.tasa_cambio || 36.50;
                     
-                    // Actualizar tarjetas
                     document.getElementById('totalAbonados').textContent = data.total_abonados || 0;
                     document.getElementById('activosCount').textContent = data.activos || 0;
                     document.getElementById('inactivosCount').textContent = data.inactivos || 0;
@@ -892,7 +1102,7 @@
                         'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
                     
                     document.getElementById('totalUsd').textContent = 
-                        '$ ' + formatCurrency(data.pagos_mes_usd || 0);
+                        formatCurrency(data.pagos_mes_usd || 0);
                     
                     document.getElementById('tasaCambio').textContent = 
                         (data.tasa_cambio || 36.50).toFixed(2);
@@ -902,7 +1112,6 @@
             }
         }
 
-        // Cargar top deudores
         async function loadTopDeudores() {
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/admin/deudores/top?limite=10`);
@@ -915,14 +1124,14 @@
                     data.data.forEach((deudor, index) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${index + 1}</td>
+                            <td><strong>${index + 1}</strong></td>
                             <td>${deudor.nombre || 'N/A'}</td>
                             <td>${deudor.pppoe || 'N/A'}</td>
                             <td>${deudor.zona || 'Sin zona'}</td>
                             <td>${deudor.plan || 'Sin plan'}</td>
-                            <td>${deudor.meses_deuda || 0} meses</td>
-                            <td>$ ${formatCurrency(deudor.deuda_usd || 0)}</td>
-                            <td>Bs. ${formatCurrency(deudor.deuda_bs || 0)}</td>
+                            <td><strong>${deudor.meses_deuda || 0}</strong> meses</td>
+                            <td><span style="color: var(--danger); font-weight: 600;">$ ${formatCurrency(deudor.deuda_usd || 0)}</span></td>
+                            <td><span style="color: var(--danger);">Bs. ${formatCurrency(deudor.deuda_bs || 0)}</span></td>
                             <td><span class="status-badge status-${deudor.estado || 'inactivo'}">${deudor.estado || 'desconocido'}</span></td>
                         `;
                         tbody.appendChild(row);
@@ -930,8 +1139,9 @@
                 } else {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 30px;">
-                                No hay deudores registrados
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-check-circle" style="color: var(--success); font-size: 40px;"></i>
+                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay deudores registrados</p>
                             </td>
                         </tr>
                     `;
@@ -940,15 +1150,15 @@
                 console.error('Error cargando top deudores:', error);
                 document.getElementById('deudoresBody').innerHTML = `
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 30px; color: #dc2626;">
-                            Error cargando datos: ${error.message}
+                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--danger);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
+                            <p style="margin-top: 10px;">Error cargando datos</p>
                         </td>
                     </tr>
                 `;
             }
         }
 
-        // Cargar cobranza por zona para gráficos
         async function loadCobranzaPorZona() {
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/admin/cobranza/por-zona`);
@@ -960,8 +1170,6 @@
                     const pendiente = data.data.map(item => item.deuda_pendiente_usd || 0);
                     
                     createCobranzaChart(zonas, pagado, pendiente);
-                    
-                    // También actualizar filtros de zonas
                     updateZonasFilter(data.data.map(item => item.zona));
                 }
             } catch (error) {
@@ -969,7 +1177,6 @@
             }
         }
 
-        // Cargar distribución de abonados
         async function loadDistribucion() {
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
@@ -988,7 +1195,6 @@
             }
         }
 
-        // Cargar listado de abonados con filtros
         async function loadAbonados(page = 1) {
             try {
                 showLoading(true);
@@ -1012,22 +1218,22 @@
                 if (data.success && data.data.length > 0) {
                     tbody.innerHTML = '';
                     data.data.forEach(abonado => {
+                        const deudaColor = abonado.deuda_total_usd > 0 ? 'var(--danger)' : 'var(--success)';
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${abonado.codigo || 'N/A'}</td>
+                            <td><strong>${abonado.codigo || 'N/A'}</strong></td>
                             <td>${abonado.nombre || 'N/A'}</td>
                             <td>${abonado.pppoe || 'N/A'}</td>
                             <td>${abonado.zona || 'Sin zona'}</td>
                             <td>${abonado.plan || 'Sin plan'}</td>
                             <td><span class="status-badge status-${abonado.estado || 'inactivo'}">${abonado.estado || 'desconocido'}</span></td>
-                            <td>$ ${formatCurrency(abonado.deuda_total_usd || 0)}</td>
+                            <td style="color: ${deudaColor}; font-weight: 600;">$ ${formatCurrency(abonado.deuda_total_usd || 0)}</td>
                             <td>${abonado.meses_deuda || 0}</td>
                             <td>${abonado.telefono || 'N/A'}</td>
                         `;
                         tbody.appendChild(row);
                     });
                     
-                    // Actualizar paginación
                     totalAbonados = data.pagination.total;
                     document.getElementById('paginationInfo').textContent = 
                         `Mostrando ${((page-1)*CONFIG.pageSize)+1} - ${Math.min(page*CONFIG.pageSize, totalAbonados)} de ${totalAbonados} abonados`;
@@ -1040,8 +1246,9 @@
                 } else {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 30px;">
-                                No hay abonados registrados
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-users" style="color: var(--text-secondary); font-size: 40px;"></i>
+                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay abonados registrados</p>
                             </td>
                         </tr>
                     `;
@@ -1050,8 +1257,9 @@
                 console.error('Error cargando abonados:', error);
                 document.getElementById('abonadosBody').innerHTML = `
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 30px; color: #dc2626;">
-                            Error cargando datos: ${error.message}
+                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--danger);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
+                            <p style="margin-top: 10px;">Error cargando datos</p>
                         </td>
                     </tr>
                 `;
@@ -1060,7 +1268,6 @@
             }
         }
 
-        // Cargar pagos recientes
         async function loadPagosRecientes() {
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/admin/pagos/recientes?limite=50`);
@@ -1074,9 +1281,9 @@
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${new Date(pago.fecha).toLocaleDateString('es-VE')}</td>
-                            <td>${pago.abonado_nombre || 'N/A'}</td>
+                            <td><strong>${pago.abonado_nombre || 'N/A'}</strong></td>
                             <td>${pago.abonado_pppoe || 'N/A'}</td>
-                            <td>Bs. ${formatCurrency(pago.monto_bs || 0)}</td>
+                            <td><span style="color: var(--success); font-weight: 600;">Bs. ${formatCurrency(pago.monto_bs || 0)}</span></td>
                             <td>$ ${formatCurrency(pago.monto_usd || 0)}</td>
                             <td>${pago.mes || 'N/A'}</td>
                             <td>${pago.referencia || 'N/A'}</td>
@@ -1086,8 +1293,9 @@
                 } else {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px;">
-                                No hay pagos registrados
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-credit-card" style="color: var(--text-secondary); font-size: 40px;"></i>
+                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay pagos registrados</p>
                             </td>
                         </tr>
                     `;
@@ -1096,8 +1304,9 @@
                 console.error('Error cargando pagos:', error);
                 document.getElementById('pagosBody').innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px; color: #dc2626;">
-                            Error cargando datos: ${error.message}
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
+                            <p style="margin-top: 10px;">Error cargando datos</p>
                         </td>
                     </tr>
                 `;
@@ -1105,7 +1314,7 @@
         }
 
         // ============================================
-        // FUNCIONES DE GRÁFICOS
+        // GRÁFICOS ESTILO PASTEL
         // ============================================
         function createCobranzaChart(zonas, pagado, pendiente) {
             const ctx = document.getElementById('cobranzaChart').getContext('2d');
@@ -1122,14 +1331,16 @@
                         {
                             label: 'Recaudado (USD)',
                             data: pagado,
-                            backgroundColor: '#2563eb',
-                            borderRadius: 6
+                            backgroundColor: '#c4b5fd', // Lila pastel
+                            borderRadius: 8,
+                            barPercentage: 0.6
                         },
                         {
                             label: 'Pendiente (USD)',
                             data: pendiente,
-                            backgroundColor: '#94a3b8',
-                            borderRadius: 6
+                            backgroundColor: '#cbd5e1', // Gris pastel
+                            borderRadius: 8,
+                            barPercentage: 0.6
                         }
                     ]
                 },
@@ -1139,15 +1350,36 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'white',
+                            titleColor: '#1e293b',
+                            bodyColor: '#64748b',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` $ ${context.raw.toLocaleString()}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9'
+                            },
                             ticks: {
                                 callback: function(value) {
                                     return '$ ' + value;
                                 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -1162,14 +1394,23 @@
                 charts.distribucion.destroy();
             }
 
+            // Colores pastel
+            const pastelColors = [
+                '#bef264', // Verde pastel
+                '#cbd5e1', // Gris pastel
+                '#fecaca', // Rojo pastel
+                '#f9a8d4'  // Rosa pastel
+            ];
+
             charts.distribucion = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Activos', 'Inactivos', 'Cortados', 'Exhonerados'],
                     datasets: [{
                         data: [activos, inactivos, cortados, exhonerados],
-                        backgroundColor: ['#10b981', '#94a3b8', '#ef4444', '#f59e0b'],
-                        borderWidth: 0
+                        backgroundColor: pastelColors,
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
@@ -1177,10 +1418,31 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'white',
+                            titleColor: '#1e293b',
+                            bodyColor: '#64748b',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = activos + inactivos + cortados + exhonerados;
+                                    const percentage = ((context.raw / total) * 100).toFixed(1);
+                                    return `${context.raw} abonados (${percentage}%)`;
+                                }
+                            }
                         }
                     },
-                    cutout: '70%'
+                    cutout: '65%',
+                    radius: '90%'
                 }
             });
         }
@@ -1192,12 +1454,10 @@
             const select = document.getElementById('zonaFilter');
             const currentValue = select.value;
             
-            // Limpiar opciones excepto "Todas"
             while (select.options.length > 1) {
                 select.remove(1);
             }
             
-            // Agregar zonas únicas
             const zonasUnicas = [...new Set(zonas.filter(z => z && z !== 'Sin zona'))];
             zonasUnicas.sort().forEach(zona => {
                 const option = document.createElement('option');
@@ -1206,8 +1466,7 @@
                 select.appendChild(option);
             });
             
-            // Restaurar valor seleccionado
-            if (currentValue !== 'all') {
+            if (currentValue !== 'all' && zonasUnicas.includes(currentValue)) {
                 select.value = currentValue;
             }
         }
@@ -1224,16 +1483,16 @@
                 dashboard: 'Dashboard',
                 abonados: 'Gestión de Abonados',
                 pagos: 'Registro de Pagos',
-                deudas: 'Gestión de Deudas'
+                deudas: 'Gestión de Deudas',
+                reportes: 'Reportes',
+                config: 'Configuración'
             };
             document.getElementById('pageTitle').textContent = titles[tab];
             
-            // Ocultar todos los tabs
             document.getElementById('dashboard-tab').style.display = 'none';
             document.getElementById('abonados-tab').style.display = 'none';
             document.getElementById('pagos-tab').style.display = 'none';
             
-            // Mostrar tab seleccionado y cargar datos
             if (tab === 'dashboard') {
                 document.getElementById('dashboard-tab').style.display = 'block';
                 await loadDashboardData();
@@ -1286,9 +1545,7 @@
             loadAbonados(currentPage + 1);
         }
 
-        // ============================================
-        // FUNCIONES DE EXPORTACIÓN
-        // ============================================
+        // Funciones de exportación
         function exportDeudores() {
             alert('Funcionalidad de exportación en desarrollo');
         }
@@ -1301,19 +1558,15 @@
             alert('Funcionalidad de exportación en desarrollo');
         }
 
-        // ============================================
-        // INICIALIZACIÓN
-        // ============================================
+        // Inicialización
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Admin Dashboard inicializado - Usando API real');
+            console.log('🚀 Admin Dashboard - Versión Pastel');
             
             updateDateTime();
             setInterval(updateDateTime, 1000);
             
-            // Cargar datos iniciales
             await loadDashboardData();
             
-            // Auto-refresh cada 5 minutos
             setInterval(refreshData, 300000);
         });
     </script>
