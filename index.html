@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ===== MANTENEMOS LOS MISMOS ESTILOS ===== */
         * {
             margin: 0;
             padding: 0;
@@ -30,6 +31,7 @@
             padding: 20px;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
         }
 
         .sidebar-header {
@@ -230,6 +232,35 @@
             border-radius: 3px;
         }
 
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
         /* Tables */
         .table-container {
             background: white;
@@ -319,14 +350,20 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
+            display: inline-block;
         }
 
-        .status-active {
+        .status-activo {
             background: #dcfce7;
             color: #16a34a;
         }
 
-        .status-inactive {
+        .status-inactivo {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .status-cortado {
             background: #fee2e2;
             color: #dc2626;
         }
@@ -334,76 +371,6 @@
         .status-exhonerado {
             background: #fef3c7;
             color: #b45309;
-        }
-
-        .status-cortado {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        /* Loading Spinner */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 25px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #64748b;
         }
 
         /* Filtros */
@@ -435,6 +402,7 @@
             border-radius: 6px;
             font-size: 13px;
             color: #1e293b;
+            min-width: 150px;
         }
 
         .search-box {
@@ -460,7 +428,47 @@
             font-size: 14px;
         }
 
-        /* Responsive */
+        /* Paginación */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination-info {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            padding: 8px 15px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-current {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 width: 70px;
@@ -496,10 +504,20 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -523,14 +541,6 @@
         <div class="nav-item" onclick="switchTab('deudas')">
             <i class="fas fa-file-invoice-dollar"></i>
             <span>Deudas</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('reportes')">
-            <i class="fas fa-chart-pie"></i>
-            <span>Reportes</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('config')">
-            <i class="fas fa-cog"></i>
-            <span>Configuración</span>
         </div>
     </div>
 
@@ -607,23 +617,8 @@
                     <div class="stat-value" id="exhoneradosCount">-</div>
                     <div class="stat-subtitle">Usuarios exhonerados</div>
                     <div class="stat-footer">
-                        <span>Sin pagos: -</span>
-                        <span>Especiales: -</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Usuarios Cortados</span>
-                        <div class="stat-icon red">
-                            <i class="fas fa-ban"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="cortadosCount">-</div>
-                    <div class="stat-subtitle">Servicio suspendido</div>
-                    <div class="stat-footer">
-                        <span>Por mora: -</span>
-                        <span>% total: -</span>
+                        <span>Cortados: <span id="cortadosCount">-</span></span>
+                        <span>% total: <span id="porcentajeEspeciales">-</span></span>
                     </div>
                 </div>
 
@@ -652,23 +647,8 @@
                     <div class="stat-value" id="totalBs">-</div>
                     <div class="stat-subtitle">Este mes</div>
                     <div class="stat-footer">
-                        <span>Mes anterior: -</span>
-                        <span>Variación: -</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">Recaudado USD</span>
-                        <div class="stat-icon green">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="totalUsd">-</div>
-                    <div class="stat-subtitle">Al cambio actual</div>
-                    <div class="stat-footer">
                         <span>Tasa: <span id="tasaCambio">36.50</span></span>
-                        <span>Fecha: <span id="tasaFecha">-</span></span>
+                        <span>USD: <span id="totalUsd">-</span></span>
                     </div>
                 </div>
             </div>
@@ -689,18 +669,18 @@
                             </div>
                         </div>
                     </div>
-                    <canvas id="cobranzaChart" style="height: 300px;"></canvas>
+                    <canvas id="cobranzaChart" style="height: 300px; width: 100%;"></canvas>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
                         <span class="chart-title">Distribución de Abonados</span>
                     </div>
-                    <canvas id="distribucionChart" style="height: 300px;"></canvas>
+                    <canvas id="distribucionChart" style="height: 300px; width: 100%;"></canvas>
                 </div>
             </div>
 
-            <!-- Deudores Top -->
+            <!-- Top Deudores -->
             <div class="table-container">
                 <div class="table-header">
                     <span class="table-title">Top 10 Deudores</span>
@@ -710,32 +690,34 @@
                         </button>
                     </div>
                 </div>
-                <table id="deudoresTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Abonado</th>
-                            <th>PPPoE</th>
-                            <th>Zona</th>
-                            <th>Plan</th>
-                            <th>Meses Deuda</th>
-                            <th>Deuda USD</th>
-                            <th>Deuda Bs.</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="deudoresBody">
-                        <tr>
-                            <td colspan="9" style="text-align: center; padding: 30px;">
-                                <div class="loading"></div> Cargando datos...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table id="deudoresTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Abonado</th>
+                                <th>PPPoE</th>
+                                <th>Zona</th>
+                                <th>Plan</th>
+                                <th>Meses Deuda</th>
+                                <th>Deuda USD</th>
+                                <th>Deuda Bs.</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deudoresBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 30px;">
+                                    Cargando datos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- Abonados Tab (inicialmente oculto) -->
+        <!-- Abonados Tab -->
         <div id="abonados-tab" style="display: none;">
             <div class="table-container">
                 <div class="table-header">
@@ -744,16 +726,12 @@
                         <button class="btn btn-outline" onclick="exportAbonados()">
                             <i class="fas fa-download"></i> Exportar
                         </button>
-                        <button class="btn btn-primary" onclick="showAddAbonadoModal()">
-                            <i class="fas fa-plus"></i> Nuevo Abonado
-                        </button>
                     </div>
                 </div>
                 <div style="overflow-x: auto;">
-                    <table id="abonadosTable">
+                    <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Código</th>
                                 <th>Nombre</th>
                                 <th>PPPoE</th>
@@ -761,29 +739,27 @@
                                 <th>Plan</th>
                                 <th>Estado</th>
                                 <th>Deuda USD</th>
-                                <th>Deuda Bs.</th>
-                                <th>Acciones</th>
+                                <th>Meses</th>
+                                <th>Teléfono</th>
                             </tr>
                         </thead>
                         <tbody id="abonadosBody">
                             <tr>
-                                <td colspan="10" style="text-align: center; padding: 30px;">
-                                    <div class="loading"></div> Cargando datos...
+                                <td colspan="9" style="text-align: center; padding: 30px;">
+                                    Cargando datos...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        Mostrando <span id="abonadosFrom">0</span> - <span id="abonadosTo">0</span> de <span id="abonadosTotal">0</span>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline" onclick="prevPage()" id="prevBtn" disabled>
+                <div class="pagination">
+                    <div class="pagination-info" id="paginationInfo"></div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" onclick="prevPage()" id="prevPageBtn">
                             <i class="fas fa-chevron-left"></i> Anterior
                         </button>
-                        <span id="currentPage">1</span>
-                        <button class="btn btn-outline" onclick="nextPage()" id="nextBtn">
+                        <span class="pagination-current" id="currentPage">1</span>
+                        <button class="pagination-btn" onclick="nextPage()" id="nextPageBtn">
                             Siguiente <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -791,7 +767,7 @@
             </div>
         </div>
 
-        <!-- Pagos Tab (inicialmente oculto) -->
+        <!-- Pagos Tab -->
         <div id="pagos-tab" style="display: none;">
             <div class="table-container">
                 <div class="table-header">
@@ -813,14 +789,12 @@
                                 <th>Monto USD</th>
                                 <th>Mes Pagado</th>
                                 <th>Referencia</th>
-                                <th>Método</th>
-                                <th>Comprobante</th>
                             </tr>
                         </thead>
                         <tbody id="pagosBody">
                             <tr>
-                                <td colspan="9" style="text-align: center; padding: 30px;">
-                                    <div class="loading"></div> Cargando pagos...
+                                <td colspan="7" style="text-align: center; padding: 30px;">
+                                    Cargando pagos...
                                 </td>
                             </tr>
                         </tbody>
@@ -830,26 +804,12 @@
         </div>
     </div>
 
-    <!-- Modal para ver comprobante -->
-    <div class="modal" id="comprobanteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title">Comprobante de Pago</span>
-                <button class="modal-close" onclick="closeModal('comprobanteModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="comprobanteContent" style="text-align: center; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                Cargando comprobante...
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Configuración
+        // ============================================
+        // CONFIGURACIÓN - USA TU API REAL
+        // ============================================
         const CONFIG = {
-            apiUrl: 'https://holy-credit-b4ed.thecrow859.workers.dev/api',
-            tasaCambio: 36.50,
+            apiUrl: 'https://holy-credit-b4ed.thecrow859.workers.dev/api', // Tu API real
             pageSize: 20
         };
 
@@ -857,24 +817,22 @@
         let currentTab = 'dashboard';
         let currentPage = 1;
         let totalAbonados = 0;
-        let filteredAbonados = [];
-        let allAbonados = [];
-        let allPlanes = [];
-        let allZonas = [];
-        let allPagos = [];
-        let allDeudas = [];
         let charts = {};
+        let tasaCambioActual = 36.50;
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Admin Dashboard inicializado');
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-            
-            await loadInitialData();
-            await loadDashboardData();
-            setupAutoRefresh();
-        });
+        // ============================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        function formatCurrency(amount) {
+            return parseFloat(amount || 0).toLocaleString('es-VE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
         function updateDateTime() {
             const now = new Date();
@@ -895,109 +853,263 @@
                 `Última actualización: ${now.toLocaleTimeString('es-VE')}`;
         }
 
-        function setupAutoRefresh() {
-            // Refrescar cada 5 minutos
-            setInterval(async () => {
-                if (currentTab === 'dashboard') {
-                    await loadDashboardData();
+        // ============================================
+        // FUNCIONES DE CARGA DE DATOS DESDE API REAL
+        // ============================================
+
+        // Cargar estadísticas generales
+        async function loadEstadisticas() {
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    tasaCambioActual = data.tasa_cambio || 36.50;
+                    
+                    // Actualizar tarjetas
+                    document.getElementById('totalAbonados').textContent = data.total_abonados || 0;
+                    document.getElementById('activosCount').textContent = data.activos || 0;
+                    document.getElementById('inactivosCount').textContent = data.inactivos || 0;
+                    document.getElementById('exhoneradosCount').textContent = data.exhonerados || 0;
+                    document.getElementById('cortadosCount').textContent = data.cortados || 0;
+                    
+                    const totalEspeciales = (data.exhonerados || 0) + (data.cortados || 0);
+                    const porcentajeEspeciales = data.total_abonados > 0 
+                        ? ((totalEspeciales / data.total_abonados) * 100).toFixed(1)
+                        : 0;
+                    document.getElementById('porcentajeEspeciales').textContent = porcentajeEspeciales + '%';
+                    
+                    document.getElementById('porcentajeCobranza').textContent = 
+                        (data.porcentaje_cobranza || 0).toFixed(1) + '%';
+                    
+                    document.getElementById('recaudadoMes').textContent = 
+                        'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
+                    
+                    document.getElementById('pendienteMes').textContent = 
+                        'Bs. ' + formatCurrency(data.deuda_total_bs || 0);
+                    
+                    document.getElementById('totalBs').textContent = 
+                        'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
+                    
+                    document.getElementById('totalUsd').textContent = 
+                        '$ ' + formatCurrency(data.pagos_mes_usd || 0);
+                    
+                    document.getElementById('tasaCambio').textContent = 
+                        (data.tasa_cambio || 36.50).toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Cargar top deudores
+        async function loadTopDeudores() {
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/admin/deudores/top?limite=10`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('deudoresBody');
+                
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = '';
+                    data.data.forEach((deudor, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${deudor.nombre || 'N/A'}</td>
+                            <td>${deudor.pppoe || 'N/A'}</td>
+                            <td>${deudor.zona || 'Sin zona'}</td>
+                            <td>${deudor.plan || 'Sin plan'}</td>
+                            <td>${deudor.meses_deuda || 0} meses</td>
+                            <td>$ ${formatCurrency(deudor.deuda_usd || 0)}</td>
+                            <td>Bs. ${formatCurrency(deudor.deuda_bs || 0)}</td>
+                            <td><span class="status-badge status-${deudor.estado || 'inactivo'}">${deudor.estado || 'desconocido'}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
                 } else {
-                    await refreshData();
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 30px;">
+                                No hay deudores registrados
+                            </td>
+                        </tr>
+                    `;
                 }
-            }, 300000);
-        }
-
-        async function loadInitialData() {
-            try {
-                // Cargar tasa de cambio
-                const tasaResponse = await fetch(`${CONFIG.apiUrl}/tasa-cambio`);
-                const tasaData = await tasaResponse.json();
-                if (tasaData.success) {
-                    CONFIG.tasaCambio = tasaData.tasa_cambio;
-                    document.getElementById('tasaCambio').textContent = CONFIG.tasaCambio.toFixed(2);
-                }
-
-                // Cargar listado de zonas y planes para filtros
-                // Nota: Necesitarías endpoints adicionales en tu API para esto
-                // Por ahora usamos datos de ejemplo
-                populateFilters();
-
             } catch (error) {
-                console.error('Error cargando datos iniciales:', error);
+                console.error('Error cargando top deudores:', error);
+                document.getElementById('deudoresBody').innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 30px; color: #dc2626;">
+                            Error cargando datos: ${error.message}
+                        </td>
+                    </tr>
+                `;
             }
         }
 
-        function populateFilters() {
-            // Zonas de ejemplo (idealmente cargadas desde API)
-            const zonas = ['Los Pozos', 'La Mesa', 'Las Canoas', 'Centro', 'Norte', 'Sur'];
-            const zonaSelect = document.getElementById('zonaFilter');
-            zonas.forEach(zona => {
-                const option = document.createElement('option');
-                option.value = zona.toLowerCase();
-                option.textContent = zona;
-                zonaSelect.appendChild(option);
-            });
-
-            // Planes de ejemplo
-            const planes = ['Básico 10MB', 'Estándar 20MB', 'Premium 50MB', 'Empresarial 100MB'];
-            const planSelect = document.getElementById('planFilter');
-            planes.forEach(plan => {
-                const option = document.createElement('option');
-                option.value = plan.toLowerCase();
-                option.textContent = plan;
-                planSelect.appendChild(option);
-            });
-        }
-
-        async function loadDashboardData() {
+        // Cargar cobranza por zona para gráficos
+        async function loadCobranzaPorZona() {
             try {
-                // En una implementación real, necesitarías endpoints específicos
-                // para obtener estadísticas agregadas. Por ahora simulamos con datos de ejemplo
+                const response = await fetch(`${CONFIG.apiUrl}/admin/cobranza/por-zona`);
+                const data = await response.json();
                 
-                // Datos de ejemplo para demostración
-                const mockData = {
-                    totalAbonados: 1245,
-                    activos: 987,
-                    inactivos: 258,
-                    exhonerados: 23,
-                    cortados: 45,
-                    deudaTotal: 15890.50,
-                    pagosMes: 23450.75,
-                    cobranza: 78.5,
-                    recaudadoBs: 23450.75,
-                    recaudadoUsd: 23450.75 / CONFIG.tasaCambio
-                };
-
-                // Actualizar estadísticas
-                document.getElementById('totalAbonados').textContent = mockData.totalAbonados.toLocaleString();
-                document.getElementById('activosCount').textContent = mockData.activos.toLocaleString();
-                document.getElementById('inactivosCount').textContent = mockData.inactivos.toLocaleString();
-                document.getElementById('exhoneradosCount').textContent = mockData.exhonerados.toLocaleString();
-                document.getElementById('cortadosCount').textContent = mockData.cortados.toLocaleString();
-                document.getElementById('porcentajeCobranza').textContent = mockData.cobranza + '%';
-                document.getElementById('recaudadoMes').textContent = `Bs. ${formatCurrency(mockData.recaudadoBs)}`;
-                document.getElementById('pendienteMes').textContent = `Bs. ${formatCurrency(mockData.deudaTotal)}`;
-                document.getElementById('totalBs').textContent = `Bs. ${formatCurrency(mockData.recaudadoBs)}`;
-                document.getElementById('totalUsd').textContent = `$ ${formatCurrency(mockData.recaudadoUsd)}`;
-
-                // Crear/actualizar gráficos
-                createCobranzaChart();
-                createDistribucionChart();
-                
-                // Cargar top deudores
-                loadTopDeudores();
-
-                updateLastUpdate();
-
+                if (data.success && data.data.length > 0) {
+                    const zonas = data.data.map(item => item.zona);
+                    const pagado = data.data.map(item => item.pagado_usd || 0);
+                    const pendiente = data.data.map(item => item.deuda_pendiente_usd || 0);
+                    
+                    createCobranzaChart(zonas, pagado, pendiente);
+                    
+                    // También actualizar filtros de zonas
+                    updateZonasFilter(data.data.map(item => item.zona));
+                }
             } catch (error) {
-                console.error('Error cargando dashboard:', error);
-                showError('Error al cargar datos del dashboard');
+                console.error('Error cargando cobranza por zona:', error);
             }
         }
 
-        function createCobranzaChart() {
+        // Cargar distribución de abonados
+        async function loadDistribucion() {
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    createDistribucionChart(
+                        data.activos || 0,
+                        data.inactivos || 0,
+                        data.cortados || 0,
+                        data.exhonerados || 0
+                    );
+                }
+            } catch (error) {
+                console.error('Error cargando distribución:', error);
+            }
+        }
+
+        // Cargar listado de abonados con filtros
+        async function loadAbonados(page = 1) {
+            try {
+                showLoading(true);
+                
+                const zona = document.getElementById('zonaFilter').value;
+                const plan = document.getElementById('planFilter').value;
+                const estado = document.getElementById('estadoFilter').value;
+                const search = document.getElementById('searchInput').value;
+                
+                let url = `${CONFIG.apiUrl}/admin/abonados?page=${page}&limit=${CONFIG.pageSize}`;
+                if (zona && zona !== 'all') url += `&zona=${encodeURIComponent(zona)}`;
+                if (plan && plan !== 'all') url += `&plan=${encodeURIComponent(plan)}`;
+                if (estado && estado !== 'all') url += `&estado=${encodeURIComponent(estado)}`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('abonadosBody');
+                
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = '';
+                    data.data.forEach(abonado => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${abonado.codigo || 'N/A'}</td>
+                            <td>${abonado.nombre || 'N/A'}</td>
+                            <td>${abonado.pppoe || 'N/A'}</td>
+                            <td>${abonado.zona || 'Sin zona'}</td>
+                            <td>${abonado.plan || 'Sin plan'}</td>
+                            <td><span class="status-badge status-${abonado.estado || 'inactivo'}">${abonado.estado || 'desconocido'}</span></td>
+                            <td>$ ${formatCurrency(abonado.deuda_total_usd || 0)}</td>
+                            <td>${abonado.meses_deuda || 0}</td>
+                            <td>${abonado.telefono || 'N/A'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    // Actualizar paginación
+                    totalAbonados = data.pagination.total;
+                    document.getElementById('paginationInfo').textContent = 
+                        `Mostrando ${((page-1)*CONFIG.pageSize)+1} - ${Math.min(page*CONFIG.pageSize, totalAbonados)} de ${totalAbonados} abonados`;
+                    document.getElementById('currentPage').textContent = page;
+                    
+                    document.getElementById('prevPageBtn').disabled = page <= 1;
+                    document.getElementById('nextPageBtn').disabled = page >= data.pagination.pages;
+                    
+                    currentPage = page;
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 30px;">
+                                No hay abonados registrados
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error cargando abonados:', error);
+                document.getElementById('abonadosBody').innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 30px; color: #dc2626;">
+                            Error cargando datos: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Cargar pagos recientes
+        async function loadPagosRecientes() {
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/admin/pagos/recientes?limite=50`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('pagosBody');
+                
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = '';
+                    data.data.forEach(pago => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(pago.fecha).toLocaleDateString('es-VE')}</td>
+                            <td>${pago.abonado_nombre || 'N/A'}</td>
+                            <td>${pago.abonado_pppoe || 'N/A'}</td>
+                            <td>Bs. ${formatCurrency(pago.monto_bs || 0)}</td>
+                            <td>$ ${formatCurrency(pago.monto_usd || 0)}</td>
+                            <td>${pago.mes || 'N/A'}</td>
+                            <td>${pago.referencia || 'N/A'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 30px;">
+                                No hay pagos registrados
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error cargando pagos:', error);
+                document.getElementById('pagosBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #dc2626;">
+                            Error cargando datos: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ============================================
+        // FUNCIONES DE GRÁFICOS
+        // ============================================
+        function createCobranzaChart(zonas, pagado, pendiente) {
             const ctx = document.getElementById('cobranzaChart').getContext('2d');
             
-            // Destruir gráfico anterior si existe
             if (charts.cobranza) {
                 charts.cobranza.destroy();
             }
@@ -1005,17 +1117,17 @@
             charts.cobranza = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Los Pozos', 'La Mesa', 'Las Canoas', 'Centro', 'Norte', 'Sur'],
+                    labels: zonas,
                     datasets: [
                         {
-                            label: 'Recaudado',
-                            data: [12000, 8500, 7200, 15000, 9800, 6200],
+                            label: 'Recaudado (USD)',
+                            data: pagado,
                             backgroundColor: '#2563eb',
                             borderRadius: 6
                         },
                         {
-                            label: 'Pendiente',
-                            data: [3500, 4200, 2800, 5000, 3100, 1800],
+                            label: 'Pendiente (USD)',
+                            data: pendiente,
                             backgroundColor: '#94a3b8',
                             borderRadius: 6
                         }
@@ -1034,7 +1146,7 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    return 'Bs. ' + value.toLocaleString();
+                                    return '$ ' + value;
                                 }
                             }
                         }
@@ -1043,7 +1155,7 @@
             });
         }
 
-        function createDistribucionChart() {
+        function createDistribucionChart(activos, inactivos, cortados, exhonerados) {
             const ctx = document.getElementById('distribucionChart').getContext('2d');
             
             if (charts.distribucion) {
@@ -1055,13 +1167,8 @@
                 data: {
                     labels: ['Activos', 'Inactivos', 'Cortados', 'Exhonerados'],
                     datasets: [{
-                        data: [987, 190, 45, 23],
-                        backgroundColor: [
-                            '#10b981',
-                            '#94a3b8',
-                            '#ef4444',
-                            '#f59e0b'
-                        ],
+                        data: [activos, inactivos, cortados, exhonerados],
+                        backgroundColor: ['#10b981', '#94a3b8', '#ef4444', '#f59e0b'],
                         borderWidth: 0
                     }]
                 },
@@ -1078,149 +1185,137 @@
             });
         }
 
-        function loadTopDeudores() {
-            // Datos de ejemplo
-            const deudores = [
-                { id: 1, nombre: 'Juan Pérez', pppoe: 'juan123', zona: 'Los Pozos', plan: 'Premium 50MB', meses: 3, deudaUsd: 150, deudaBs: 150 * CONFIG.tasaCambio, estado: 'cortado' },
-                { id: 2, nombre: 'María García', pppoe: 'maria456', zona: 'La Mesa', plan: 'Básico 10MB', meses: 2, deudaUsd: 60, deudaBs: 60 * CONFIG.tasaCambio, estado: 'activo' },
-                { id: 3, nombre: 'Carlos Rodríguez', pppoe: 'carlos789', zona: 'Las Canoas', plan: 'Estándar 20MB', meses: 4, deudaUsd: 160, deudaBs: 160 * CONFIG.tasaCambio, estado: 'cortado' },
-                { id: 4, nombre: 'Ana Martínez', pppoe: 'ana101', zona: 'Centro', plan: 'Premium 50MB', meses: 2, deudaUsd: 100, deudaBs: 100 * CONFIG.tasaCambio, estado: 'activo' },
-                { id: 5, nombre: 'Pedro Sánchez', pppoe: 'pedro202', zona: 'Norte', plan: 'Básico 10MB', meses: 5, deudaUsd: 150, deudaBs: 150 * CONFIG.tasaCambio, estado: 'cortado' }
-            ];
-
-            const tbody = document.getElementById('deudoresBody');
-            tbody.innerHTML = '';
-
-            deudores.forEach((deudor, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${deudor.nombre}</td>
-                    <td>${deudor.pppoe}</td>
-                    <td>${deudor.zona}</td>
-                    <td>${deudor.plan}</td>
-                    <td>${deudor.meses} meses</td>
-                    <td>$ ${formatCurrency(deudor.deudaUsd)}</td>
-                    <td>Bs. ${formatCurrency(deudor.deudaBs)}</td>
-                    <td><span class="status-badge status-${deudor.estado}">${deudor.estado}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        async function refreshData() {
-            showLoading();
-            await loadDashboardData();
-            hideLoading();
-        }
-
-        function applyFilters() {
-            const zona = document.getElementById('zonaFilter').value;
-            const plan = document.getElementById('planFilter').value;
-            const estado = document.getElementById('estadoFilter').value;
-            const search = document.getElementById('searchInput').value.toLowerCase();
-
-            console.log('Filtros aplicados:', { zona, plan, estado, search });
+        // ============================================
+        // FUNCIONES DE FILTROS Y NAVEGACIÓN
+        // ============================================
+        async function updateZonasFilter(zonas) {
+            const select = document.getElementById('zonaFilter');
+            const currentValue = select.value;
             
-            // Aquí implementarías el filtrado real
-            // Por ahora solo recargamos datos
-            loadDashboardData();
+            // Limpiar opciones excepto "Todas"
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Agregar zonas únicas
+            const zonasUnicas = [...new Set(zonas.filter(z => z && z !== 'Sin zona'))];
+            zonasUnicas.sort().forEach(zona => {
+                const option = document.createElement('option');
+                option.value = zona;
+                option.textContent = zona;
+                select.appendChild(option);
+            });
+            
+            // Restaurar valor seleccionado
+            if (currentValue !== 'all') {
+                select.value = currentValue;
+            }
         }
 
-        function switchTab(tab) {
+        async function switchTab(tab) {
             currentTab = tab;
             
-            // Actualizar navegación
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             event.currentTarget.classList.add('active');
             
-            // Actualizar título
             const titles = {
                 dashboard: 'Dashboard',
                 abonados: 'Gestión de Abonados',
                 pagos: 'Registro de Pagos',
-                deudas: 'Gestión de Deudas',
-                reportes: 'Reportes',
-                config: 'Configuración'
+                deudas: 'Gestión de Deudas'
             };
             document.getElementById('pageTitle').textContent = titles[tab];
             
-            // Mostrar tab correspondiente
-            document.getElementById('dashboard-tab').style.display = tab === 'dashboard' ? 'block' : 'none';
-            document.getElementById('abonados-tab').style.display = tab === 'abonados' ? 'block' : 'none';
-            document.getElementById('pagos-tab').style.display = tab === 'pagos' ? 'block' : 'none';
+            // Ocultar todos los tabs
+            document.getElementById('dashboard-tab').style.display = 'none';
+            document.getElementById('abonados-tab').style.display = 'none';
+            document.getElementById('pagos-tab').style.display = 'none';
             
-            // Cargar datos si es necesario
-            if (tab === 'abonados') {
-                loadAbonados();
+            // Mostrar tab seleccionado y cargar datos
+            if (tab === 'dashboard') {
+                document.getElementById('dashboard-tab').style.display = 'block';
+                await loadDashboardData();
+            } else if (tab === 'abonados') {
+                document.getElementById('abonados-tab').style.display = 'block';
+                await loadAbonados(1);
             } else if (tab === 'pagos') {
-                loadPagos();
+                document.getElementById('pagos-tab').style.display = 'block';
+                await loadPagosRecientes();
             }
         }
 
-        function formatCurrency(amount) {
-            return amount.toLocaleString('es-VE', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+        async function loadDashboardData() {
+            showLoading(true);
+            await Promise.all([
+                loadEstadisticas(),
+                loadTopDeudores(),
+                loadCobranzaPorZona(),
+                loadDistribucion()
+            ]);
+            updateLastUpdate();
+            showLoading(false);
         }
 
-        function showLoading() {
-            // Implementar indicador de carga
+        async function refreshData() {
+            showLoading(true);
+            if (currentTab === 'dashboard') {
+                await loadDashboardData();
+            } else if (currentTab === 'abonados') {
+                await loadAbonados(currentPage);
+            } else if (currentTab === 'pagos') {
+                await loadPagosRecientes();
+            }
+            showLoading(false);
         }
 
-        function hideLoading() {
-            // Ocultar indicador de carga
-        }
-
-        function showError(message) {
-            alert(message); // Mejorar con un toast o notificación
-        }
-
-        // Funciones placeholder para exportar
-        function exportDeudores() {
-            alert('Exportando listado de deudores...');
-        }
-
-        function exportAbonados() {
-            alert('Exportando listado de abonados...');
-        }
-
-        function exportPagos() {
-            alert('Exportando pagos...');
-        }
-
-        function showAddAbonadoModal() {
-            alert('Funcionalidad: Agregar nuevo abonado');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+        async function applyFilters() {
+            if (currentTab === 'abonados') {
+                await loadAbonados(1);
+            }
         }
 
         function prevPage() {
             if (currentPage > 1) {
-                currentPage--;
-                loadAbonados();
+                loadAbonados(currentPage - 1);
             }
         }
 
         function nextPage() {
-            if (currentPage * CONFIG.pageSize < totalAbonados) {
-                currentPage++;
-                loadAbonados();
-            }
+            loadAbonados(currentPage + 1);
         }
 
-        async function loadAbonados() {
-            // Implementar carga de abonados con paginación
+        // ============================================
+        // FUNCIONES DE EXPORTACIÓN
+        // ============================================
+        function exportDeudores() {
+            alert('Funcionalidad de exportación en desarrollo');
         }
 
-        async function loadPagos() {
-            // Implementar carga de pagos
+        function exportAbonados() {
+            alert('Funcionalidad de exportación en desarrollo');
         }
+
+        function exportPagos() {
+            alert('Funcionalidad de exportación en desarrollo');
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Admin Dashboard inicializado - Usando API real');
+            
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Cargar datos iniciales
+            await loadDashboardData();
+            
+            // Auto-refresh cada 5 minutos
+            setInterval(refreshData, 300000);
+        });
     </script>
 </body>
 </html>
