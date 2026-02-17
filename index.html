@@ -302,51 +302,51 @@
 
         <!-- Stats Cards -->
         <div class="stats-grid">
-            <!-- Total Abonados -->
+            <!-- Tarjeta 1: Total Abonados -->
             <div class="stat-card">
                 <div class="stat-title">
                     <i class="fas fa-users"></i> Total Abonados
                 </div>
                 <div class="stat-number" id="totalAbonados">0</div>
                 <div class="stat-detail">
-                    <span>Activos: <strong id="activos">0</strong></span>
-                    <span>Inactivos: <strong id="inactivos">0</strong></span>
+                    <span>✅ Activos: <strong id="activos">0</strong></span>
+                    <span>🔴 Cortados: <strong id="cortados">0</strong></span>
                 </div>
             </div>
 
-            <!-- Usuarios Especiales -->
+            <!-- Tarjeta 2: Usuarios Especiales (Exhonerados) -->
             <div class="stat-card">
                 <div class="stat-title">
                     <i class="fas fa-user-tag"></i> Usuarios Especiales
                 </div>
                 <div class="stat-number" id="exhonerados">0</div>
                 <div class="stat-detail">
-                    <span>Exhonerados: <strong id="exhoneradosCount">0</strong></span>
-                    <span>Cortados: <strong id="cortados">0</strong></span>
+                    <span>⭐ Exhonerados: <strong id="exhoneradosCount">0</strong></span>
+                    <span></span>
                 </div>
             </div>
 
-            <!-- Cobranza -->
+            <!-- Tarjeta 3: Cobranza -->
             <div class="stat-card">
                 <div class="stat-title">
                     <i class="fas fa-percent"></i> Cobranza
                 </div>
                 <div class="stat-number" id="porcentajeCobranza">0%</div>
                 <div class="stat-detail">
-                    <span>Recaudado: <strong id="recaudado">Bs. 0</strong></span>
-                    <span>Pendiente: <strong id="pendiente">Bs. 0</strong></span>
+                    <span>💰 Recaudado: <strong id="recaudado">Bs. 0</strong></span>
+                    <span>⏳ Pendiente: <strong id="pendiente">Bs. 0</strong></span>
                 </div>
             </div>
 
-            <!-- Recaudación -->
+            <!-- Tarjeta 4: Recaudación -->
             <div class="stat-card">
                 <div class="stat-title">
                     <i class="fas fa-dollar-sign"></i> Recaudación
                 </div>
                 <div class="stat-number" id="totalBs">Bs. 0</div>
                 <div class="stat-detail">
-                    <span>USD: $<strong id="totalUsd">0</strong></span>
-                    <span>Tasa: Bs. <strong id="tasaCambio">36.50</strong></span>
+                    <span>💵 USD: $<strong id="totalUsd">0</strong></span>
+                    <span>💱 Tasa: Bs. <strong id="tasaCambio">36.50</strong></span>
                 </div>
             </div>
         </div>
@@ -438,27 +438,36 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Total abonados
+                    // TARJETA 1: Total Abonados
                     document.getElementById('totalAbonados').textContent = data.total_abonados || 0;
                     document.getElementById('activos').textContent = data.activos || 0;
-                    document.getElementById('inactivos').textContent = data.inactivos || 0;
+                    document.getElementById('cortados').textContent = data.cortados || 0; // Cambiado: ahora muestra cortados
                     
-                    // Usuarios especiales
-                    document.getElementById('exhonerados').textContent = (data.exhonerados || 0) + (data.cortados || 0);
+                    // TARJETA 2: Usuarios Especiales (solo Exhonerados)
+                    document.getElementById('exhonerados').textContent = data.exhonerados || 0;
                     document.getElementById('exhoneradosCount').textContent = data.exhonerados || 0;
-                    document.getElementById('cortados').textContent = data.cortados || 0;
                     
-                    // Cobranza
-                    document.getElementById('porcentajeCobranza').textContent = (data.porcentaje_cobranza || 0).toFixed(1) + '%';
+                    // TARJETA 3: Cobranza - CÁLCULO CORREGIDO
+                    const pagado = data.pagos_mes_usd || 0;
+                    const pendiente = data.deuda_total_usd || 0;
+                    const totalFacturado = pagado + pendiente;
+                    
+                    // Calcular porcentaje de cobranza (lo pagado vs lo facturado)
+                    let porcentaje = 0;
+                    if (totalFacturado > 0) {
+                        porcentaje = (pagado / totalFacturado) * 100;
+                    }
+                    
+                    document.getElementById('porcentajeCobranza').textContent = porcentaje.toFixed(1) + '%';
                     document.getElementById('recaudado').textContent = 'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
                     document.getElementById('pendiente').textContent = 'Bs. ' + formatCurrency(data.deuda_total_bs || 0);
                     
-                    // Recaudación
+                    // TARJETA 4: Recaudación
                     document.getElementById('totalBs').textContent = 'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
                     document.getElementById('totalUsd').textContent = formatCurrency(data.pagos_mes_usd || 0);
                     document.getElementById('tasaCambio').textContent = (data.tasa_cambio || 36.50).toFixed(2);
                     
-                    // Crear gráfico circular
+                    // Crear gráfico circular (Activos, Inactivos, Cortados, Exhonerados)
                     crearGraficoDistribucion(
                         data.activos || 0,
                         data.inactivos || 0,
@@ -595,9 +604,7 @@
         async function cargarTodosLosDatos() {
             // Mostrar loading
             document.querySelectorAll('.stat-number').forEach(el => {
-                if (!el.id.includes('total')) {
-                    el.style.opacity = '0.5';
-                }
+                el.style.opacity = '0.5';
             });
             
             await Promise.all([
