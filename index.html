@@ -3,423 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISP Admin Dashboard - Robertsystems</title>
+    <title>ISP Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --bg-primary: #f8fafd;
-            --bg-sidebar: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --accent: #6366f1;
-            --accent-light: #e0e7ff;
-            --accent-soft: #c7d2fe;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            
-            /* Colores pastel para gráficos */
-            --pastel-1: #f9a8d4;  /* Rosa pastel */
-            --pastel-2: #c4b5fd;  /* Lila pastel */
-            --pastel-3: #a5f3fc;  /* Celeste pastel */
-            --pastel-4: #bef264;  /* Verde pastel */
-            --pastel-5: #fed7aa;  /* Naranja pastel */
-            --pastel-6: #fecaca;  /* Rojo pastel */
-            --pastel-7: #cbd5e1;  /* Gris pastel */
-            --pastel-8: #fbcfe8;  /* Rosa más claro */
-            
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
+            background: #f5f7fb;
+            padding: 20px;
         }
 
-        /* Layout */
-        .app-wrapper {
-            display: flex;
-            min-height: 100vh;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: var(--bg-sidebar);
-            box-shadow: var(--shadow-lg);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 50;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-header {
-            padding: 30px 24px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .logo-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
-
-        .logo-text h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .logo-text p {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .nav-menu {
-            padding: 24px 16px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin: 4px 0;
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item i {
-            width: 20px;
-            font-size: 16px;
-        }
-
-        .nav-item:hover {
-            background: var(--accent-light);
-            color: var(--accent);
-        }
-
-        .nav-item.active {
-            background: var(--accent);
-            color: white;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 30px;
-        }
-
-        /* Top Bar */
-        .top-bar {
+        /* Header */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .page-title {
+        .header h1 {
             font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .date-badge {
-            background: white;
-            padding: 10px 20px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .date-badge i {
-            color: var(--accent);
-        }
-
-        .last-update {
-            background: var(--accent-light);
-            color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 15px;
-        }
-
-        /* Filters Section */
-        .filters-section {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-group {
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: var(--bg-primary);
-            padding: 4px 12px 4px 4px;
-            border-radius: var(--radius-lg);
         }
 
-        .filter-label {
+        .header h1 i {
+            color: #3b82f6;
+        }
+
+        .date-box {
             background: white;
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--accent);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .filter-select {
-            border: none;
-            background: transparent;
-            padding: 8px;
-            font-size: 13px;
-            color: var(--text-primary);
-            font-weight: 500;
-            outline: none;
-            cursor: pointer;
-            min-width: 140px;
-        }
-
-        .search-box {
-            flex: 1;
-            position: relative;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 1px solid #e2e8f0;
-            border-radius: var(--radius-lg);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: #64748b;
             font-size: 14px;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-light);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
         }
 
         .refresh-btn {
-            background: var(--accent);
+            background: #3b82f6;
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: var(--radius-lg);
-            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
         }
 
         .refresh-btn:hover {
-            background: #4f46e5;
+            background: #2563eb;
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
         }
 
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
             margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             padding: 24px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--pastel-1));
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
         .stat-title {
-            color: var(--text-secondary);
+            color: #64748b;
             font-size: 14px;
-            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: var(--accent-light);
-            color: var(--accent);
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-
-        .stat-subtitle {
-            color: var(--text-secondary);
-            font-size: 13px;
-            margin-bottom: 16px;
-        }
-
-        .stat-footer {
-            padding-top: 16px;
-            border-top: 1px solid #eef2f6;
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .stat-footer span {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        /* Charts Grid */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-            margin-bottom: 30px;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .chart-title i {
-            color: var(--accent);
+        .stat-title i {
+            color: #3b82f6;
+            font-size: 16px;
         }
 
-        .chart-legend {
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .stat-detail {
+            color: #94a3b8;
+            font-size: 14px;
             display: flex;
-            gap: 16px;
-            font-size: 12px;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Main Row - Gráfico + Tabla */
+        .main-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Gráfico Circular */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .chart-legend-custom {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
         }
 
         .legend-color {
@@ -428,13 +180,12 @@
             border-radius: 4px;
         }
 
-        /* Table Styles */
+        /* Tabla Deudores */
         .table-container {
             background: white;
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             padding: 24px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .table-header {
@@ -445,51 +196,21 @@
         }
 
         .table-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .table-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-        }
-
-        .btn-outline {
-            background: white;
-            border: 1px solid #e2e8f0;
-            color: var(--text-secondary);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg-primary);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #4f46e5;
+        .badge {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         table {
@@ -499,548 +220,196 @@
 
         th {
             text-align: left;
-            padding: 16px 12px;
+            padding: 12px;
             background: #f8fafc;
-            color: var(--text-secondary);
+            color: #475569;
             font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            border-radius: 8px;
         }
 
         td {
-            padding: 16px 12px;
-            border-bottom: 1px solid #eef2f6;
-            color: var(--text-primary);
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
             font-size: 14px;
         }
 
-        tr:hover td {
-            background: #f8fafc;
-        }
-
-        .status-badge {
-            padding: 6px 12px;
+        .status {
+            padding: 4px 8px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             display: inline-block;
         }
 
-        .status-activo {
-            background: #d1fae5;
-            color: #065f46;
-        }
+        .status.activo { background: #dcfce7; color: #16a34a; }
+        .status.cortado { background: #fee2e2; color: #dc2626; }
+        .status.exhonerado { background: #fef3c7; color: #b45309; }
 
-        .status-inactivo {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .status-cortado {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-exhonerado {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--accent-light);
-            border-top-color: var(--accent);
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .pagination-info {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .pagination-btn {
-            padding: 8px 16px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination-current {
-            font-weight: 600;
-            color: var(--accent);
-            background: var(--accent-light);
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 80px;
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .sidebar .logo-text,
-            .sidebar .nav-item span {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 80px;
-            }
-            
-            .nav-item {
-                justify-content: center;
-                padding: 12px;
-            }
-            
-            .nav-item i {
-                margin: 0;
+            .main-row {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
             
-            .filters-section {
+            .header {
                 flex-direction: column;
-            }
-            
-            .filter-group {
-                width: 100%;
-            }
-            
-            .search-box {
-                width: 100%;
+                gap: 15px;
+                align-items: start;
             }
         }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-    </div>
-
-    <div class="app-wrapper">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-wrapper">
-                    <div class="logo-icon">
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h2>ISP Control</h2>
-                        <p>Robertsystems</p>
-                    </div>
-                </div>
-            </div>
-
-            <nav class="nav-menu">
-                <div class="nav-item active" onclick="switchTab('dashboard')">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="switchTab('abonados')">
-                    <i class="fas fa-users"></i>
-                    <span>Abonados</span>
-                </div>
-                <div class="nav-item" onclick="switchTab('pagos')">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Pagos</span>
-                </div>
-                <div class="nav-item" onclick="switchTab('deudas')">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>Deudas</span>
-                </div>
-                <div class="nav-item" onclick="switchTab('reportes')">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Reportes</span>
-                </div>
-                <div class="nav-item" onclick="switchTab('config')">
-                    <i class="fas fa-cog"></i>
-                    <span>Configuración</span>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div>
-                    <span class="page-title" id="pageTitle">Dashboard</span>
-                    <span class="last-update" id="lastUpdate">Actualizando...</span>
-                </div>
-                <div class="date-badge">
-                    <i class="far fa-calendar-alt"></i>
-                    <span id="currentDateTime"></span>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="filters-section">
-                <div class="filter-group">
-                    <span class="filter-label">Zona</span>
-                    <select class="filter-select" id="zonaFilter" onchange="applyFilters()">
-                        <option value="all">Todas las zonas</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <span class="filter-label">Plan</span>
-                    <select class="filter-select" id="planFilter" onchange="applyFilters()">
-                        <option value="all">Todos los planes</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <span class="filter-label">Estado</span>
-                    <select class="filter-select" id="estadoFilter" onchange="applyFilters()">
-                        <option value="all">Todos</option>
-                        <option value="activo">Activos</option>
-                        <option value="inactivo">Inactivos</option>
-                        <option value="cortado">Cortados</option>
-                        <option value="exhonerado">Exhonerados</option>
-                    </select>
-                </div>
-
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Buscar por nombre o PPPoE..." id="searchInput" onkeyup="applyFilters()">
-                </div>
-
-                <button class="refresh-btn" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i>
-                    Actualizar
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chart-pie"></i>
+                Panel de Control ISP
+            </h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="date-box" id="currentDateTime"></div>
+                <button class="refresh-btn" onclick="cargarTodosLosDatos()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
+        </div>
 
-            <!-- Dashboard Tab -->
-            <div id="dashboard-tab">
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Total Abonados</span>
-                            <div class="stat-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="totalAbonados">0</div>
-                        <div class="stat-subtitle">Usuarios registrados</div>
-                        <div class="stat-footer">
-                            <span>Activos: <span id="activosCount">0</span></span>
-                            <span>Inactivos: <span id="inactivosCount">0</span></span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Estado de Cuentas</span>
-                            <div class="stat-icon">
-                                <i class="fas fa-user-tag"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="exhoneradosCount">0</div>
-                        <div class="stat-subtitle">Usuarios exhonerados</div>
-                        <div class="stat-footer">
-                            <span>Cortados: <span id="cortadosCount">0</span></span>
-                            <span>% especial: <span id="porcentajeEspeciales">0%</span></span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Cobranza</span>
-                            <div class="stat-icon">
-                                <i class="fas fa-percent"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="porcentajeCobranza">0%</div>
-                        <div class="stat-subtitle">Eficiencia de cobro</div>
-                        <div class="stat-footer">
-                            <span>Recaudado: <span id="recaudadoMes">Bs. 0</span></span>
-                            <span>Pendiente: <span id="pendienteMes">Bs. 0</span></span>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-title">Recaudación</span>
-                            <div class="stat-icon">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="totalBs">Bs. 0</div>
-                        <div class="stat-subtitle">Este mes</div>
-                        <div class="stat-footer">
-                            <span>Tasa: $1 = <span id="tasaCambio">36.50</span></span>
-                            <span>USD: $<span id="totalUsd">0</span></span>
-                        </div>
-                    </div>
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <!-- Total Abonados -->
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-users"></i> Total Abonados
                 </div>
-
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <!-- Gráfico de Cobranza por Zona (Barras) -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">
-                                <i class="fas fa-chart-bar"></i>
-                                Cobranza por Zona
-                            </div>
-                            <div class="chart-legend">
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background: var(--pastel-2);"></div>
-                                    <span>Recaudado</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background: var(--pastel-7);"></div>
-                                    <span>Pendiente</span>
-                                </div>
-                            </div>
-                        </div>
-                        <canvas id="cobranzaChart" style="height: 300px; width: 100%;"></canvas>
-                    </div>
-
-                    <!-- Gráfico de Distribución (Pastel) -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">
-                                <i class="fas fa-chart-pie"></i>
-                                Distribución de Abonados
-                            </div>
-                        </div>
-                        <canvas id="distribucionChart" style="height: 300px; width: 100%;"></canvas>
-                    </div>
-                </div>
-
-                <!-- Top Deudores Table -->
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
-                            Top 10 Deudores
-                        </div>
-                        <div class="table-actions">
-                            <button class="btn btn-outline" onclick="exportDeudores()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="deudoresTable">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Abonado</th>
-                                    <th>PPPoE</th>
-                                    <th>Zona</th>
-                                    <th>Plan</th>
-                                    <th>Meses Deuda</th>
-                                    <th>Deuda USD</th>
-                                    <th>Deuda Bs.</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="deudoresBody">
-                                <tr>
-                                    <td colspan="9" style="text-align: center; padding: 40px;">
-                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
-                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando datos...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="stat-number" id="totalAbonados">0</div>
+                <div class="stat-detail">
+                    <span>Activos: <strong id="activos">0</strong></span>
+                    <span>Inactivos: <strong id="inactivos">0</strong></span>
                 </div>
             </div>
 
-            <!-- Abonados Tab -->
-            <div id="abonados-tab" style="display: none;">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">
-                            <i class="fas fa-users"></i>
-                            Listado de Abonados
-                        </div>
-                        <div class="table-actions">
-                            <button class="btn btn-outline" onclick="exportAbonados()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
-                                    <th>PPPoE</th>
-                                    <th>Zona</th>
-                                    <th>Plan</th>
-                                    <th>Estado</th>
-                                    <th>Deuda USD</th>
-                                    <th>Meses</th>
-                                    <th>Teléfono</th>
-                                </tr>
-                            </thead>
-                            <tbody id="abonadosBody">
-                                <tr>
-                                    <td colspan="9" style="text-align: center; padding: 40px;">
-                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
-                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando datos...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="pagination">
-                        <div class="pagination-info" id="paginationInfo"></div>
-                        <div class="pagination-controls">
-                            <button class="pagination-btn" onclick="prevPage()" id="prevPageBtn">
-                                <i class="fas fa-chevron-left"></i> Anterior
-                            </button>
-                            <span class="pagination-current" id="currentPage">1</span>
-                            <button class="pagination-btn" onclick="nextPage()" id="nextPageBtn">
-                                Siguiente <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
+            <!-- Usuarios Especiales -->
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-user-tag"></i> Usuarios Especiales
+                </div>
+                <div class="stat-number" id="exhonerados">0</div>
+                <div class="stat-detail">
+                    <span>Exhonerados: <strong id="exhoneradosCount">0</strong></span>
+                    <span>Cortados: <strong id="cortados">0</strong></span>
                 </div>
             </div>
 
-            <!-- Pagos Tab -->
-            <div id="pagos-tab" style="display: none;">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">
-                            <i class="fas fa-credit-card"></i>
-                            Últimos Pagos Registrados
-                        </div>
-                        <div class="table-actions">
-                            <button class="btn btn-outline" onclick="exportPagos()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Abonado</th>
-                                    <th>PPPoE</th>
-                                    <th>Monto Bs.</th>
-                                    <th>Monto USD</th>
-                                    <th>Mes Pagado</th>
-                                    <th>Referencia</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pagosBody">
-                                <tr>
-                                    <td colspan="7" style="text-align: center; padding: 40px;">
-                                        <i class="fas fa-spinner fa-spin" style="color: var(--accent); font-size: 24px;"></i>
-                                        <p style="margin-top: 10px; color: var(--text-secondary);">Cargando pagos...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Cobranza -->
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-percent"></i> Cobranza
+                </div>
+                <div class="stat-number" id="porcentajeCobranza">0%</div>
+                <div class="stat-detail">
+                    <span>Recaudado: <strong id="recaudado">Bs. 0</strong></span>
+                    <span>Pendiente: <strong id="pendiente">Bs. 0</strong></span>
                 </div>
             </div>
-        </main>
+
+            <!-- Recaudación -->
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-dollar-sign"></i> Recaudación
+                </div>
+                <div class="stat-number" id="totalBs">Bs. 0</div>
+                <div class="stat-detail">
+                    <span>USD: $<strong id="totalUsd">0</strong></span>
+                    <span>Tasa: Bs. <strong id="tasaCambio">36.50</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Row: Gráfico + Tabla -->
+        <div class="main-row">
+            <!-- Gráfico Circular de Distribución -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie" style="color: #3b82f6;"></i>
+                    Distribución de Abonados
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="distribucionChart"></canvas>
+                </div>
+                <div class="chart-legend-custom" id="chartLegend"></div>
+            </div>
+
+            <!-- Tabla Top Deudores -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>
+                        Top 10 Deudores
+                        <span class="badge" id="totalDeudores">0</span>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Abonado</th>
+                                <th>PPPoE</th>
+                                <th>Zona</th>
+                                <th>Deuda USD</th>
+                                <th>Deuda Bs.</th>
+                                <th>Meses</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deudoresBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px;">
+                                    <div class="loading"></div>
+                                    <p style="margin-top: 10px; color: #64748b;">Cargando datos...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // ============================================
-        // CONFIGURACIÓN
-        // ============================================
-        const CONFIG = {
-            apiUrl: 'https://holy-credit-b4ed.thecrow859.workers.dev/api',
-            pageSize: 20,
-            colors: {
-                pastel: [
-                    '#f9a8d4', '#c4b5fd', '#a5f3fc', '#bef264', 
-                    '#fed7aa', '#fecaca', '#cbd5e1', '#fbcfe8'
-                ]
-            }
-        };
+        // Configuración
+        const API_URL = 'https://holy-credit-b4ed.thecrow859.workers.dev/api';
+        
+        // Variables
+        let chartDistribucion = null;
 
-        // Variables globales
-        let currentTab = 'dashboard';
-        let currentPage = 1;
-        let totalAbonados = 0;
-        let charts = {};
-        let tasaCambioActual = 36.50;
-
-        // ============================================
-        // FUNCIONES DE UTILIDAD
-        // ============================================
-        function showLoading(show = true) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-        }
-
+        // Funciones de utilidad
         function formatCurrency(amount) {
             return parseFloat(amount || 0).toLocaleString('es-VE', {
                 minimumFractionDigits: 2,
@@ -1050,140 +419,47 @@
 
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('currentDateTime').textContent = 
-                now.toLocaleDateString('es-VE', { 
+            document.getElementById('currentDateTime').innerHTML = `
+                <i class="far fa-calendar-alt"></i> 
+                ${now.toLocaleDateString('es-VE', { 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
-                });
+                })}
+            `;
         }
 
-        function updateLastUpdate() {
-            const now = new Date();
-            document.getElementById('lastUpdate').textContent = 
-                `Última actualización: ${now.toLocaleTimeString('es-VE')}`;
-        }
-
-        // ============================================
-        // FUNCIONES DE CARGA DE DATOS
-        // ============================================
-        async function loadEstadisticas() {
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
             try {
-                const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
+                const response = await fetch(`${API_URL}/admin/stats`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    tasaCambioActual = data.tasa_cambio || 36.50;
-                    
+                    // Total abonados
                     document.getElementById('totalAbonados').textContent = data.total_abonados || 0;
-                    document.getElementById('activosCount').textContent = data.activos || 0;
-                    document.getElementById('inactivosCount').textContent = data.inactivos || 0;
+                    document.getElementById('activos').textContent = data.activos || 0;
+                    document.getElementById('inactivos').textContent = data.inactivos || 0;
+                    
+                    // Usuarios especiales
+                    document.getElementById('exhonerados').textContent = (data.exhonerados || 0) + (data.cortados || 0);
                     document.getElementById('exhoneradosCount').textContent = data.exhonerados || 0;
-                    document.getElementById('cortadosCount').textContent = data.cortados || 0;
+                    document.getElementById('cortados').textContent = data.cortados || 0;
                     
-                    const totalEspeciales = (data.exhonerados || 0) + (data.cortados || 0);
-                    const porcentajeEspeciales = data.total_abonados > 0 
-                        ? ((totalEspeciales / data.total_abonados) * 100).toFixed(1)
-                        : 0;
-                    document.getElementById('porcentajeEspeciales').textContent = porcentajeEspeciales + '%';
+                    // Cobranza
+                    document.getElementById('porcentajeCobranza').textContent = (data.porcentaje_cobranza || 0).toFixed(1) + '%';
+                    document.getElementById('recaudado').textContent = 'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
+                    document.getElementById('pendiente').textContent = 'Bs. ' + formatCurrency(data.deuda_total_bs || 0);
                     
-                    document.getElementById('porcentajeCobranza').textContent = 
-                        (data.porcentaje_cobranza || 0).toFixed(1) + '%';
+                    // Recaudación
+                    document.getElementById('totalBs').textContent = 'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
+                    document.getElementById('totalUsd').textContent = formatCurrency(data.pagos_mes_usd || 0);
+                    document.getElementById('tasaCambio').textContent = (data.tasa_cambio || 36.50).toFixed(2);
                     
-                    document.getElementById('recaudadoMes').textContent = 
-                        'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
-                    
-                    document.getElementById('pendienteMes').textContent = 
-                        'Bs. ' + formatCurrency(data.deuda_total_bs || 0);
-                    
-                    document.getElementById('totalBs').textContent = 
-                        'Bs. ' + formatCurrency(data.pagos_mes_bs || 0);
-                    
-                    document.getElementById('totalUsd').textContent = 
-                        formatCurrency(data.pagos_mes_usd || 0);
-                    
-                    document.getElementById('tasaCambio').textContent = 
-                        (data.tasa_cambio || 36.50).toFixed(2);
-                }
-            } catch (error) {
-                console.error('Error cargando estadísticas:', error);
-            }
-        }
-
-        async function loadTopDeudores() {
-            try {
-                const response = await fetch(`${CONFIG.apiUrl}/admin/deudores/top?limite=10`);
-                const data = await response.json();
-                
-                const tbody = document.getElementById('deudoresBody');
-                
-                if (data.success && data.data.length > 0) {
-                    tbody.innerHTML = '';
-                    data.data.forEach((deudor, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${index + 1}</strong></td>
-                            <td>${deudor.nombre || 'N/A'}</td>
-                            <td>${deudor.pppoe || 'N/A'}</td>
-                            <td>${deudor.zona || 'Sin zona'}</td>
-                            <td>${deudor.plan || 'Sin plan'}</td>
-                            <td><strong>${deudor.meses_deuda || 0}</strong> meses</td>
-                            <td><span style="color: var(--danger); font-weight: 600;">$ ${formatCurrency(deudor.deuda_usd || 0)}</span></td>
-                            <td><span style="color: var(--danger);">Bs. ${formatCurrency(deudor.deuda_bs || 0)}</span></td>
-                            <td><span class="status-badge status-${deudor.estado || 'inactivo'}">${deudor.estado || 'desconocido'}</span></td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="9" style="text-align: center; padding: 40px;">
-                                <i class="fas fa-check-circle" style="color: var(--success); font-size: 40px;"></i>
-                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay deudores registrados</p>
-                            </td>
-                        </tr>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error cargando top deudores:', error);
-                document.getElementById('deudoresBody').innerHTML = `
-                    <tr>
-                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--danger);">
-                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
-                            <p style="margin-top: 10px;">Error cargando datos</p>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        async function loadCobranzaPorZona() {
-            try {
-                const response = await fetch(`${CONFIG.apiUrl}/admin/cobranza/por-zona`);
-                const data = await response.json();
-                
-                if (data.success && data.data.length > 0) {
-                    const zonas = data.data.map(item => item.zona);
-                    const pagado = data.data.map(item => item.pagado_usd || 0);
-                    const pendiente = data.data.map(item => item.deuda_pendiente_usd || 0);
-                    
-                    createCobranzaChart(zonas, pagado, pendiente);
-                    updateZonasFilter(data.data.map(item => item.zona));
-                }
-            } catch (error) {
-                console.error('Error cargando cobranza por zona:', error);
-            }
-        }
-
-        async function loadDistribucion() {
-            try {
-                const response = await fetch(`${CONFIG.apiUrl}/admin/stats`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    createDistribucionChart(
+                    // Crear gráfico circular
+                    crearGraficoDistribucion(
                         data.activos || 0,
                         data.inactivos || 0,
                         data.cortados || 0,
@@ -1191,162 +467,40 @@
                     );
                 }
             } catch (error) {
-                console.error('Error cargando distribución:', error);
+                console.error('Error cargando estadísticas:', error);
             }
         }
 
-        async function loadAbonados(page = 1) {
-            try {
-                showLoading(true);
-                
-                const zona = document.getElementById('zonaFilter').value;
-                const plan = document.getElementById('planFilter').value;
-                const estado = document.getElementById('estadoFilter').value;
-                const search = document.getElementById('searchInput').value;
-                
-                let url = `${CONFIG.apiUrl}/admin/abonados?page=${page}&limit=${CONFIG.pageSize}`;
-                if (zona && zona !== 'all') url += `&zona=${encodeURIComponent(zona)}`;
-                if (plan && plan !== 'all') url += `&plan=${encodeURIComponent(plan)}`;
-                if (estado && estado !== 'all') url += `&estado=${encodeURIComponent(estado)}`;
-                if (search) url += `&search=${encodeURIComponent(search)}`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                const tbody = document.getElementById('abonadosBody');
-                
-                if (data.success && data.data.length > 0) {
-                    tbody.innerHTML = '';
-                    data.data.forEach(abonado => {
-                        const deudaColor = abonado.deuda_total_usd > 0 ? 'var(--danger)' : 'var(--success)';
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${abonado.codigo || 'N/A'}</strong></td>
-                            <td>${abonado.nombre || 'N/A'}</td>
-                            <td>${abonado.pppoe || 'N/A'}</td>
-                            <td>${abonado.zona || 'Sin zona'}</td>
-                            <td>${abonado.plan || 'Sin plan'}</td>
-                            <td><span class="status-badge status-${abonado.estado || 'inactivo'}">${abonado.estado || 'desconocido'}</span></td>
-                            <td style="color: ${deudaColor}; font-weight: 600;">$ ${formatCurrency(abonado.deuda_total_usd || 0)}</td>
-                            <td>${abonado.meses_deuda || 0}</td>
-                            <td>${abonado.telefono || 'N/A'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    
-                    totalAbonados = data.pagination.total;
-                    document.getElementById('paginationInfo').textContent = 
-                        `Mostrando ${((page-1)*CONFIG.pageSize)+1} - ${Math.min(page*CONFIG.pageSize, totalAbonados)} de ${totalAbonados} abonados`;
-                    document.getElementById('currentPage').textContent = page;
-                    
-                    document.getElementById('prevPageBtn').disabled = page <= 1;
-                    document.getElementById('nextPageBtn').disabled = page >= data.pagination.pages;
-                    
-                    currentPage = page;
-                } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="9" style="text-align: center; padding: 40px;">
-                                <i class="fas fa-users" style="color: var(--text-secondary); font-size: 40px;"></i>
-                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay abonados registrados</p>
-                            </td>
-                        </tr>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error cargando abonados:', error);
-                document.getElementById('abonadosBody').innerHTML = `
-                    <tr>
-                        <td colspan="9" style="text-align: center; padding: 40px; color: var(--danger);">
-                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
-                            <p style="margin-top: 10px;">Error cargando datos</p>
-                        </td>
-                    </tr>
-                `;
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function loadPagosRecientes() {
-            try {
-                const response = await fetch(`${CONFIG.apiUrl}/admin/pagos/recientes?limite=50`);
-                const data = await response.json();
-                
-                const tbody = document.getElementById('pagosBody');
-                
-                if (data.success && data.data.length > 0) {
-                    tbody.innerHTML = '';
-                    data.data.forEach(pago => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${new Date(pago.fecha).toLocaleDateString('es-VE')}</td>
-                            <td><strong>${pago.abonado_nombre || 'N/A'}</strong></td>
-                            <td>${pago.abonado_pppoe || 'N/A'}</td>
-                            <td><span style="color: var(--success); font-weight: 600;">Bs. ${formatCurrency(pago.monto_bs || 0)}</span></td>
-                            <td>$ ${formatCurrency(pago.monto_usd || 0)}</td>
-                            <td>${pago.mes || 'N/A'}</td>
-                            <td>${pago.referencia || 'N/A'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 40px;">
-                                <i class="fas fa-credit-card" style="color: var(--text-secondary); font-size: 40px;"></i>
-                                <p style="margin-top: 10px; color: var(--text-secondary);">No hay pagos registrados</p>
-                            </td>
-                        </tr>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error cargando pagos:', error);
-                document.getElementById('pagosBody').innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">
-                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
-                            <p style="margin-top: 10px;">Error cargando datos</p>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        // ============================================
-        // GRÁFICOS ESTILO PASTEL
-        // ============================================
-        function createCobranzaChart(zonas, pagado, pendiente) {
-            const ctx = document.getElementById('cobranzaChart').getContext('2d');
+        // Crear gráfico circular
+        function crearGraficoDistribucion(activos, inactivos, cortados, exhonerados) {
+            const ctx = document.getElementById('distribucionChart').getContext('2d');
             
-            if (charts.cobranza) {
-                charts.cobranza.destroy();
+            // Destruir gráfico anterior si existe
+            if (chartDistribucion) {
+                chartDistribucion.destroy();
             }
 
-            charts.cobranza = new Chart(ctx, {
-                type: 'bar',
+            // Colores: verde, gris, rojo, amarillo
+            const colores = ['#10b981', '#94a3b8', '#ef4444', '#f59e0b'];
+            const datos = [activos, inactivos, cortados, exhonerados];
+            const etiquetas = ['Activos', 'Inactivos', 'Cortados', 'Exhonerados'];
+            
+            // Crear nuevo gráfico
+            chartDistribucion = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: zonas,
-                    datasets: [
-                        {
-                            label: 'Recaudado (USD)',
-                            data: pagado,
-                            backgroundColor: '#c4b5fd', // Lila pastel
-                            borderRadius: 8,
-                            barPercentage: 0.6
-                        },
-                        {
-                            label: 'Pendiente (USD)',
-                            data: pendiente,
-                            backgroundColor: '#cbd5e1', // Gris pastel
-                            borderRadius: 8,
-                            barPercentage: 0.6
-                        }
-                    ]
+                    labels: etiquetas,
+                    datasets: [{
+                        data: datos,
+                        backgroundColor: colores,
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '70%',
                     plugins: {
                         legend: {
                             display: false
@@ -1360,214 +514,111 @@
                             padding: 12,
                             callbacks: {
                                 label: function(context) {
-                                    return ` $ ${context.raw.toLocaleString()}`;
+                                    const total = activos + inactivos + cortados + exhonerados;
+                                    const valor = context.raw;
+                                    const porcentaje = total > 0 ? ((valor / total) * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${valor} (${porcentaje}%)`;
                                 }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#f1f5f9'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return '$ ' + value;
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
                             }
                         }
                     }
                 }
             });
+
+            // Actualizar leyenda personalizada
+            const legendHtml = etiquetas.map((label, index) => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${colores[index]};"></div>
+                    <span><strong>${label}:</strong> ${datos[index]}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('chartLegend').innerHTML = legendHtml;
         }
 
-        function createDistribucionChart(activos, inactivos, cortados, exhonerados) {
-            const ctx = document.getElementById('distribucionChart').getContext('2d');
-            
-            if (charts.distribucion) {
-                charts.distribucion.destroy();
+        // Cargar top deudores
+        async function cargarTopDeudores() {
+            try {
+                const response = await fetch(`${API_URL}/admin/deudores/top?limite=10`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('deudoresBody');
+                
+                if (data.success && data.data.length > 0) {
+                    document.getElementById('totalDeudores').textContent = data.data.length;
+                    
+                    tbody.innerHTML = '';
+                    data.data.forEach((deudor, index) => {
+                        const estadoClass = {
+                            'activo': 'activo',
+                            'cortado': 'cortado',
+                            'exhonerado': 'exhonerado'
+                        }[deudor.estado] || 'inactivo';
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${index + 1}</strong></td>
+                            <td>${deudor.nombre || 'N/A'}</td>
+                            <td>${deudor.pppoe || 'N/A'}</td>
+                            <td>${deudor.zona || 'Sin zona'}</td>
+                            <td><strong style="color: #dc2626;">$ ${formatCurrency(deudor.deuda_usd || 0)}</strong></td>
+                            <td>Bs. ${formatCurrency(deudor.deuda_bs || 0)}</td>
+                            <td>${deudor.meses_deuda || 0}</td>
+                            <td><span class="status ${estadoClass}">${deudor.estado || 'desconocido'}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-check-circle" style="color: #10b981; font-size: 40px;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">No hay deudores registrados</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error cargando deudores:', error);
+                document.getElementById('deudoresBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #dc2626;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
+                            <p style="margin-top: 10px;">Error cargando datos</p>
+                        </td>
+                    </tr>
+                `;
             }
+        }
 
-            // Colores pastel
-            const pastelColors = [
-                '#bef264', // Verde pastel
-                '#cbd5e1', // Gris pastel
-                '#fecaca', // Rojo pastel
-                '#f9a8d4'  // Rosa pastel
-            ];
-
-            charts.distribucion = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Activos', 'Inactivos', 'Cortados', 'Exhonerados'],
-                    datasets: [{
-                        data: [activos, inactivos, cortados, exhonerados],
-                        backgroundColor: pastelColors,
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true,
-                                pointStyle: 'circle'
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'white',
-                            titleColor: '#1e293b',
-                            bodyColor: '#64748b',
-                            borderColor: '#e2e8f0',
-                            borderWidth: 1,
-                            padding: 12,
-                            callbacks: {
-                                label: function(context) {
-                                    const total = activos + inactivos + cortados + exhonerados;
-                                    const percentage = ((context.raw / total) * 100).toFixed(1);
-                                    return `${context.raw} abonados (${percentage}%)`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '65%',
-                    radius: '90%'
+        // Cargar todos los datos
+        async function cargarTodosLosDatos() {
+            // Mostrar loading
+            document.querySelectorAll('.stat-number').forEach(el => {
+                if (!el.id.includes('total')) {
+                    el.style.opacity = '0.5';
                 }
             });
-        }
-
-        // ============================================
-        // FUNCIONES DE FILTROS Y NAVEGACIÓN
-        // ============================================
-        async function updateZonasFilter(zonas) {
-            const select = document.getElementById('zonaFilter');
-            const currentValue = select.value;
             
-            while (select.options.length > 1) {
-                select.remove(1);
-            }
-            
-            const zonasUnicas = [...new Set(zonas.filter(z => z && z !== 'Sin zona'))];
-            zonasUnicas.sort().forEach(zona => {
-                const option = document.createElement('option');
-                option.value = zona;
-                option.textContent = zona;
-                select.appendChild(option);
-            });
-            
-            if (currentValue !== 'all' && zonasUnicas.includes(currentValue)) {
-                select.value = currentValue;
-            }
-        }
-
-        async function switchTab(tab) {
-            currentTab = tab;
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            
-            const titles = {
-                dashboard: 'Dashboard',
-                abonados: 'Gestión de Abonados',
-                pagos: 'Registro de Pagos',
-                deudas: 'Gestión de Deudas',
-                reportes: 'Reportes',
-                config: 'Configuración'
-            };
-            document.getElementById('pageTitle').textContent = titles[tab];
-            
-            document.getElementById('dashboard-tab').style.display = 'none';
-            document.getElementById('abonados-tab').style.display = 'none';
-            document.getElementById('pagos-tab').style.display = 'none';
-            
-            if (tab === 'dashboard') {
-                document.getElementById('dashboard-tab').style.display = 'block';
-                await loadDashboardData();
-            } else if (tab === 'abonados') {
-                document.getElementById('abonados-tab').style.display = 'block';
-                await loadAbonados(1);
-            } else if (tab === 'pagos') {
-                document.getElementById('pagos-tab').style.display = 'block';
-                await loadPagosRecientes();
-            }
-        }
-
-        async function loadDashboardData() {
-            showLoading(true);
             await Promise.all([
-                loadEstadisticas(),
-                loadTopDeudores(),
-                loadCobranzaPorZona(),
-                loadDistribucion()
+                cargarEstadisticas(),
+                cargarTopDeudores()
             ]);
-            updateLastUpdate();
-            showLoading(false);
-        }
-
-        async function refreshData() {
-            showLoading(true);
-            if (currentTab === 'dashboard') {
-                await loadDashboardData();
-            } else if (currentTab === 'abonados') {
-                await loadAbonados(currentPage);
-            } else if (currentTab === 'pagos') {
-                await loadPagosRecientes();
-            }
-            showLoading(false);
-        }
-
-        async function applyFilters() {
-            if (currentTab === 'abonados') {
-                await loadAbonados(1);
-            }
-        }
-
-        function prevPage() {
-            if (currentPage > 1) {
-                loadAbonados(currentPage - 1);
-            }
-        }
-
-        function nextPage() {
-            loadAbonados(currentPage + 1);
-        }
-
-        // Funciones de exportación
-        function exportDeudores() {
-            alert('Funcionalidad de exportación en desarrollo');
-        }
-
-        function exportAbonados() {
-            alert('Funcionalidad de exportación en desarrollo');
-        }
-
-        function exportPagos() {
-            alert('Funcionalidad de exportación en desarrollo');
-        }
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Admin Dashboard - Versión Pastel');
             
+            // Quitar loading
+            document.querySelectorAll('.stat-number').forEach(el => {
+                el.style.opacity = '1';
+            });
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
             updateDateTime();
             setInterval(updateDateTime, 1000);
+            cargarTodosLosDatos();
             
-            await loadDashboardData();
-            
-            setInterval(refreshData, 300000);
+            // Auto-refresh cada 5 minutos
+            setInterval(cargarTodosLosDatos, 300000);
         });
     </script>
 </body>
